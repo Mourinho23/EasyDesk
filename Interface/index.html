@@ -1,0 +1,827 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EasyDesk</title>
+<style>
+:root {
+  --bg: #f5f6f8;
+  --surface: #fff;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --ok: #16803c;
+  --warning: #b45309;
+  --danger: #b42318;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.container {
+  max-width: 1120px;
+  margin: auto;
+  padding: 32px 20px 40px;
+}
+
+header {
+  margin-bottom: 24px;
+}
+
+h1 {
+  font-size: 1.65rem;
+  line-height: 1.2;
+  letter-spacing: -.03em;
+  margin: 0;
+  font-weight: 650;
+}
+
+header p {
+  margin: 6px 0 0;
+  color: var(--muted);
+}
+
+.alerts {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.alert {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--warning);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.alert.danger {
+  border-left-color: var(--danger);
+}
+
+.alert.ok {
+  border-left-color: var(--ok);
+}
+
+.alert-title {
+  font-weight: 650;
+  margin-bottom: 3px;
+}
+
+.danger .alert-title {
+  color: var(--danger);
+}
+
+.ok .alert-title {
+  color: var(--ok);
+}
+
+.alert p {
+  margin: 0;
+  color: #4b5563;
+}
+
+.alert-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 9px;
+}
+
+.alert-links a {
+  color: #175cd3;
+  font-weight: 600;
+  text-underline-offset: 2px;
+}
+
+.suggestions {
+  margin: 10px 0 0;
+  padding-left: 18px;
+  color: #4b5563;
+}
+
+.suggestions li {
+  margin: 4px 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, .025);
+}
+
+.card h2 {
+  font-size: 1rem;
+  line-height: 1.3;
+  margin: 0 0 10px;
+  font-weight: 650;
+}
+
+.metric {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.metric:last-child {
+  border-bottom: 0;
+}
+
+.metric-main {
+  min-width: 0;
+  flex: 1;
+}
+
+.label {
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+.value {
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.ok-text {
+  color: var(--ok);
+}
+
+.warning-text {
+  color: var(--warning);
+}
+
+.danger-text {
+  color: var(--danger);
+}
+
+.track {
+  height: 5px;
+  background: #edf0f2;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.fill {
+  height: 100%;
+  border-radius: 999px;
+  background: #667085;
+}
+
+.fill.ok {
+  background: var(--ok);
+}
+
+.fill.warning {
+  background: var(--warning);
+}
+
+.fill.danger {
+  background: var(--danger);
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+  background: #667085;
+}
+
+.dot.ok {
+  background: var(--ok);
+}
+
+.dot.warning {
+  background: var(--warning);
+}
+
+.dot.danger {
+  background: var(--danger);
+}
+
+.components {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.components li {
+  padding: 11px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.components li:last-child {
+  border-bottom: 0;
+}
+
+.component-name {
+  font-weight: 600;
+  font-size: .92rem;
+}
+
+.component-type {
+  color: var(--muted);
+  font-size: .82rem;
+  margin-top: 3px;
+}
+
+.system-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.system-card {
+  grid-column: 1 / -1;
+}
+
+.info {
+  background: #fafafa;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 11px;
+}
+
+.info-label {
+  color: var(--muted);
+  font-size: .78rem;
+}
+
+.info-value {
+  font-weight: 600;
+  font-size: .88rem;
+  margin-top: 3px;
+}
+
+.refresh {
+  display: block;
+  margin: 20px auto 0;
+  border: 0;
+  border-radius: 7px;
+  background: #27303c;
+  color: #fff;
+  font: inherit;
+  padding: 10px 15px;
+  cursor: pointer;
+}
+
+.refresh:hover {
+  background: #151b24;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .system-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .container {
+    padding: 22px 14px 32px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .system-grid {
+    grid-template-columns: 1fr;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+  }
+
+  .card {
+    padding: 16px;
+  }
+}
+</style>
+</head>
+<body>
+<main class="container">
+<header>
+  <h1>EasyDesk</h1>
+  <p>Estado e recursos do computador</p>
+
+  <div>
+    <span>Estado: <strong id="estado-ligacao">A ligar...</strong></span> | 
+    <span>Última atualização: <strong id="ultima-atualizacao">Não encontrado</strong></span>
+  </div>
+
+  <div>
+    <h2 id="nome-computador">Não encontrado</h2>
+    <p id="modelo-computador">Não encontrado</p>
+    <p id="sistema-operativo">Não encontrado</p>
+  </div>
+</header>
+
+<section class="alerts" id="alertas" aria-label="Alertas do sistema"></section>
+
+<section class="grid">
+  <article class="card">
+    <h2>Temperaturas</h2>
+    <div class="metric">
+      <div class="metric-main">
+        <div class="label"><span id="cpu-temperatura-dot" class="dot"></span>CPU</div>
+        <div class="track"><div id="cpu-temperatura-barra" class="fill"></div></div>
+      </div>
+      <strong id="temperatura-cpu" class="value">Não encontrado</strong>
+    </div>
+    <div class="metric">
+      <div class="metric-main">
+        <div class="label"><span id="gpu-temperatura-dot" class="dot"></span>GPU</div>
+        <div class="track"><div id="gpu-temperatura-barra" class="fill"></div></div>
+      </div>
+      <strong id="temperatura-gpu" class="value">Não encontrado</strong>
+    </div>
+    <div class="metric">
+      <div class="metric-main">
+        <div class="label"><span id="disco-temperatura-dot" class="dot"></span>Disco</div>
+        <div class="track"><div id="disco-temperatura-barra" class="fill"></div></div>
+      </div>
+      <strong id="temperatura-disco" class="value">Não encontrado</strong>
+    </div>
+  </article>
+
+  <article class="card">
+    <h2>Processador (CPU)</h2>
+    <div class="metric"><span class="label">Modelo</span><strong id="cpu-modelo" class="value">Não encontrado</strong></div>
+    <div class="metric"><span class="label">Uso atual</span><strong id="cpu-uso" class="value">Não encontrado</strong></div>
+    <div class="metric"><span class="label">Núcleos</span><strong id="cpu-nucleos" class="value">Não encontrado</strong></div>
+    <div class="metric"><span class="label">Velocidade</span><strong id="cpu-velocidade" class="value">Não encontrado</strong></div>
+    <div class="metric"><span class="label">Temperatura</span><strong id="cpu-temperatura" class="value">Não encontrado</strong></div>
+  </article>
+
+  <article class="card">
+    <h2>Consumo de energia</h2>
+    <div class="metric"><span class="label">CPU</span><strong class="value">Não encontrado</strong></div>
+    <div class="metric"><span class="label">GPU</span><strong class="value">Não encontrado</strong></div>
+    <div class="metric"><span class="label">Sistema total</span><strong class="value">Não encontrado</strong></div>
+    <div class="metric"><span class="label">Eficiência da fonte</span><strong class="value">Não encontrado</strong></div>
+  </article>
+
+  <article class="card">
+    <h2>Armazenamento</h2>
+    <div class="metric">
+      <div class="metric-main">
+        <div id="armazenamento-nome" class="label">Não encontrado</div>
+        <div class="track"><div id="armazenamento-barra" class="fill"></div></div>
+      </div>
+      <strong id="armazenamento-disponivel" class="value">Não encontrado</strong>
+    </div>
+    <div class="metric"><span class="label">Tamanho</span><strong id="armazenamento-tamanho" class="value">Não encontrado</strong></div>
+    <div class="metric"><span class="label">Utilizado</span><strong id="armazenamento-usado" class="value">Não encontrado</strong></div>
+    <div class="metric"><span class="label">Utilização</span><strong id="armazenamento-percentagem" class="value">Não encontrado</strong></div>
+    <div class="metric"><span class="label">Utilizador ligado</span><strong id="armazenamento-utilizador" class="value">Não encontrado</strong></div>
+  </article>
+
+  <article class="card">
+    <h2>Memória RAM</h2>
+    <div class="metric">
+      <div class="metric-main">
+        <div class="label">Uso atual</div>
+        <div class="track"><div id="memoria-barra" class="fill"></div></div>
+      </div>
+      <strong id="memoria-uso" class="value">Não encontrado</strong>
+    </div>
+    <div class="metric"><span class="label">Total instalada</span><strong id="memoria-total" class="value">Não encontrado</strong></div>
+    <div class="metric"><span class="label">Em uso</span><strong id="memoria-usada" class="value">Não encontrado</strong></div>
+    <div class="metric"><span class="label">Disponível</span><strong id="memoria-livre" class="value">Não encontrado</strong></div>
+  </article>
+
+  <article class="card">
+    <h2>Componentes</h2>
+    <ul id="lista-componentes" class="components"></ul>
+  </article>
+
+  <article class="card system-card">
+    <h2>Sistema</h2>
+    <div class="system-grid">
+      <div class="info"><div class="info-label">Sistema operativo</div><div id="sistema-nome" class="info-value">Não encontrado</div></div>
+      <div class="info"><div class="info-label">Versão</div><div id="sistema-versao" class="info-value">Não encontrado</div></div>
+      <div class="info"><div class="info-label">Arquitetura</div><div id="sistema-arquitetura" class="info-value">Não encontrado</div></div>
+      <div class="info"><div class="info-label">Tempo ativo</div><div id="sistema-uptime" class="info-value">Não encontrado</div></div>
+      <div class="info"><div class="info-label">Firmware</div><div id="sistema-firmware" class="info-value">Não encontrado</div></div>
+      <div class="info"><div class="info-label">Placa-mãe</div><div id="sistema-placa-mae" class="info-value">Não encontrado</div></div>
+      <div class="info"><div class="info-label">Número de série</div><div id="sistema-numero-serie" class="info-value">Não encontrado</div></div>
+    </div>
+  </article>
+</section>
+
+<button class="refresh" type="button" onclick="location.reload()">Atualizar</button>
+</main>
+
+<script>
+  const naoEncontrado = "Não encontrado";
+  let eventosAtivos;
+
+  const texto = valor =>
+    valor === null || valor === undefined || valor === ""
+      ? naoEncontrado
+      : String(valor);
+
+  const numeroValido = valor =>
+    typeof valor === "number" && Number.isFinite(valor);
+
+  const formatarBytes = bytes => {
+    if (!numeroValido(bytes)) return naoEncontrado;
+
+    const unidades = ["B", "KB", "MB", "GB", "TB", "PB"];
+    let valor = bytes;
+    let unidade = 0;
+
+    while (valor >= 1024 && unidade < unidades.length - 1) {
+      valor /= 1024;
+      unidade++;
+    }
+
+    return `${valor.toFixed(valor >= 10 ? 0 : 1)} ${unidades[unidade]}`;
+  };
+
+  const formatarPercentagem = valor =>
+    numeroValido(valor) ? `${valor}%` : naoEncontrado;
+
+  const formatarTemperatura = valor =>
+    numeroValido(valor) ? `${valor} °C` : naoEncontrado;
+
+  function atualizarElemento(id, valor) {
+    const elemento = document.getElementById(id);
+    if (elemento) elemento.textContent = valor;
+  }
+
+  function atualizarBarra(id, valor, aviso, perigo, dotId) {
+    const barra = document.getElementById(id);
+    const dot = dotId ? document.getElementById(dotId) : null;
+    const nivel = numeroValido(valor)
+      ? Math.max(0, Math.min(100, valor))
+      : 0;
+    const estado = !numeroValido(valor)
+      ? ""
+      : valor >= perigo
+        ? "danger"
+        : valor >= aviso
+          ? "warning"
+          : "ok";
+
+    if (barra) {
+      barra.style.width = `${nivel}%`;
+      barra.className = `fill ${estado}`.trim();
+    }
+
+    if (dot) dot.className = `dot ${estado}`.trim();
+  }
+
+  function formatarTempoAtivo(segundos) {
+    if (!numeroValido(segundos)) return naoEncontrado;
+
+    const dias = Math.floor(segundos / 86400);
+    const horas = Math.floor((segundos % 86400) / 3600);
+    const minutos = Math.floor((segundos % 3600) / 60);
+
+    return `${dias} d, ${horas} h, ${minutos} min`;
+  }
+
+  function adicionarComponente(lista, nome, detalhe) {
+    const item = document.createElement("li");
+    const titulo = document.createElement("div");
+    const descricao = document.createElement("div");
+
+    titulo.className = "component-name";
+    titulo.textContent = texto(nome);
+    descricao.className = "component-type";
+    descricao.textContent = texto(detalhe);
+    item.append(titulo, descricao);
+    lista.append(item);
+  }
+
+  function nomeComFabricante(fabricante, modelo) {
+    const nomeFabricante = texto(fabricante);
+    const nomeModelo = texto(modelo);
+
+    if (nomeModelo === naoEncontrado) return nomeFabricante;
+    if (nomeFabricante === naoEncontrado) return nomeModelo;
+    if (nomeModelo.toLowerCase().includes(nomeFabricante.toLowerCase())) {
+      return nomeModelo;
+    }
+
+    return `${nomeFabricante} ${nomeModelo}`;
+  }
+
+  function atualizarComponentes(dados) {
+    const lista = document.getElementById("lista-componentes");
+    if (!lista) return;
+
+    lista.replaceChildren();
+
+    const cpu = dados.cpu || {};
+    const nucleos = numeroValido(cpu.nucleosFisicos)
+      ? `${cpu.nucleosFisicos} físicos / ${texto(cpu.nucleosLogicos)} lógicos`
+      : naoEncontrado;
+    const velocidade = numeroValido(cpu.velocidadeGHz)
+      ? `${cpu.velocidadeGHz} GHz`
+      : naoEncontrado;
+
+    adicionarComponente(
+      lista,
+      nomeComFabricante(cpu.fabricante, cpu.modelo),
+      `Processador · ${nucleos} · ${velocidade}`
+    );
+
+    const gpus = Array.isArray(dados.gpu) ? dados.gpu : [];
+    if (gpus.length === 0) {
+      adicionarComponente(lista, "GPU", naoEncontrado);
+    } else {
+      gpus.forEach((gpu, indice) => {
+        adicionarComponente(
+          lista,
+          nomeComFabricante(gpu.fabricante, gpu.modelo),
+          `GPU ${indice + 1} · ${formatarBytes(gpu.memoriaBytes)}`
+        );
+      });
+    }
+
+    const discos = (Array.isArray(dados.discos) ? dados.discos : [])
+      .filter(disco => !/disk image/i.test(`${disco.nome || ""} ${disco.tipo || ""}`));
+
+    if (discos.length === 0) {
+      adicionarComponente(lista, "Disco", naoEncontrado);
+    } else {
+      discos.forEach((disco, indice) => {
+        adicionarComponente(
+          lista,
+          texto(disco.modelo || disco.nome || disco.dispositivo),
+          `Disco ${indice + 1} · ${texto(disco.fabricante)} · ${texto(disco.tipo)} · ${formatarBytes(disco.tamanhoBytes)}`
+        );
+      });
+    }
+
+    adicionarComponente(
+      lista,
+      "Memória RAM",
+      `${formatarBytes(dados.memoria?.totalBytes)} · fabricante: ${naoEncontrado}`
+    );
+
+    const placaMae = dados.placaMae || {};
+    adicionarComponente(
+      lista,
+      texto(placaMae.modelo || placaMae.fabricante),
+      `Placa-mãe · ${texto(placaMae.versao)}`
+    );
+  }
+
+  function atualizarAlertas(dados, armazenamento) {
+    const container = document.getElementById("alertas");
+    if (!container) return;
+
+    const avisos = [];
+    const cpu = dados.cpu || {};
+    const memoria = dados.memoria || {};
+
+    if (numeroValido(cpu.temperaturaCelsius) && cpu.temperaturaCelsius >= 85) {
+      avisos.push(`Temperatura do CPU elevada: ${cpu.temperaturaCelsius} °C.`);
+    }
+    if (numeroValido(cpu.usoPercentagem) && cpu.usoPercentagem >= 95) {
+      avisos.push(`Utilização do CPU elevada: ${cpu.usoPercentagem}%.`);
+    }
+    if (numeroValido(memoria.usoPercentagem) && memoria.usoPercentagem >= 90) {
+      avisos.push(`Utilização da memória RAM elevada: ${memoria.usoPercentagem}%.`);
+    }
+    if (numeroValido(armazenamento?.usoPercentagem) && armazenamento.usoPercentagem >= 90) {
+      avisos.push(`Pouco espaço livre no volume ${texto(armazenamento.montagem)}.`);
+    }
+
+    container.replaceChildren();
+    const alerta = document.createElement("article");
+    alerta.className = avisos.length ? "alert danger" : "alert ok";
+    const titulo = document.createElement("div");
+    titulo.className = "alert-title";
+    titulo.textContent = avisos.length ? "Atenção" : "Sem alertas nas métricas disponíveis";
+    alerta.append(titulo);
+
+    avisos.forEach(aviso => {
+      const mensagem = document.createElement("p");
+      mensagem.textContent = aviso;
+      alerta.append(mensagem);
+    });
+
+    container.append(alerta);
+
+    const plataforma = dados.ambiente?.plataforma;
+    const temperaturasIndisponiveis =
+      !numeroValido(dados.cpu?.temperaturaCelsius) &&
+      !(dados.gpu || []).some(gpu => numeroValido(gpu.temperaturaCelsius));
+
+    if (plataforma === "darwin") {
+      if (temperaturasIndisponiveis) {
+        adicionarAviso(
+          container,
+          "Temperaturas indisponíveis neste Mac",
+          "O EasyDesk inclui leitores para Macs Intel e Apple Silicon. Este modelo ou esta versão do macOS não expôs uma leitura de temperatura compatível."
+        );
+      }
+
+      adicionarAviso(
+        container,
+        "Consumo de energia no macOS",
+        "A leitura por powermetrics exige privilégios de administrador. Aceitar a licença do Xcode, por si só, não ativa esta leitura."
+      );
+    } else if (plataforma === "win32" && temperaturasIndisponiveis) {
+      adicionarAviso(
+        container,
+        "Sensores do Windows indisponíveis",
+        "O Windows não expôs leituras de temperatura compatíveis através do firmware e dos controladores instalados. O suporte depende do hardware e dos controladores do fabricante."
+      );
+    } else if (plataforma === "linux" && temperaturasIndisponiveis) {
+      adicionarAviso(
+        container,
+        "Sensores do Linux indisponíveis",
+        "O EasyDesk lê os sensores expostos pelo kernel Linux. Este hardware ou a configuração atual do kernel não disponibilizou uma leitura de temperatura."
+      );
+    } else if (temperaturasIndisponiveis) {
+      adicionarAviso(
+        container,
+        "Sensores de temperatura indisponíveis",
+        "O sistema operativo ou o hardware não disponibilizou leituras de temperatura compatíveis."
+      );
+    }
+
+    if (plataforma !== "darwin") {
+      adicionarAviso(
+        container,
+        "Consumo de energia",
+        "A leitura do consumo elétrico ainda não está implementada para este sistema operativo."
+      );
+    }
+  }
+
+  function adicionarAviso(container, tituloTexto, mensagemTexto, links = []) {
+    const aviso = document.createElement("article");
+    const titulo = document.createElement("div");
+    const mensagem = document.createElement("p");
+
+    aviso.className = "alert";
+    titulo.className = "alert-title";
+    titulo.textContent = tituloTexto;
+    mensagem.textContent = mensagemTexto;
+    aviso.append(titulo, mensagem);
+
+    if (links.length > 0) {
+      const listaLinks = document.createElement("div");
+      listaLinks.className = "alert-links";
+
+      links.forEach(link => {
+        const ancora = document.createElement("a");
+        ancora.href = link.url;
+        ancora.target = "_blank";
+        ancora.rel = "noopener noreferrer";
+        ancora.textContent = link.label;
+        listaLinks.append(ancora);
+      });
+
+      aviso.append(listaLinks);
+    }
+
+    container.append(aviso);
+  }
+
+  function atualizarDashboard(dados) {
+    const computador = dados.computador || {};
+    const cpu = dados.cpu || {};
+    const memoria = dados.memoria || {};
+    const gpus = Array.isArray(dados.gpu) ? dados.gpu : [];
+    const discos = Array.isArray(dados.discos) ? dados.discos : [];
+    const discosFisicos = discos.filter(disco =>
+      !/disk image/i.test(`${disco.nome || ""} ${disco.tipo || ""}`)
+    );
+    const armazenamento = Array.isArray(dados.armazenamento)
+      ? dados.armazenamento
+      : [];
+    const volumePrincipal = armazenamento.find(volume => volume.principal) ||
+      armazenamento.find(volume =>
+      volume.montagem === "/System/Volumes/Data"
+    ) || armazenamento.find(volume => volume.montagem === "/") || null;
+    const gpuPrincipal = gpus[0] || {};
+    const discoPrincipal = discosFisicos[0] || {};
+
+    atualizarElemento("nome-computador", texto(computador.nome));
+    atualizarElemento("modelo-computador", texto(computador.modelo));
+    atualizarElemento("sistema-operativo", texto(computador.sistema));
+    atualizarElemento("cpu-modelo", texto(cpu.modelo));
+    atualizarElemento("cpu-uso", formatarPercentagem(cpu.usoPercentagem));
+    atualizarElemento(
+      "cpu-nucleos",
+      numeroValido(cpu.nucleosFisicos)
+        ? `${cpu.nucleosFisicos} físicos / ${texto(cpu.nucleosLogicos)} lógicos`
+        : naoEncontrado
+    );
+    atualizarElemento(
+      "cpu-velocidade",
+      numeroValido(cpu.velocidadeGHz) ? `${cpu.velocidadeGHz} GHz` : naoEncontrado
+    );
+    atualizarElemento("cpu-temperatura", formatarTemperatura(cpu.temperaturaCelsius));
+    atualizarElemento("temperatura-cpu", formatarTemperatura(cpu.temperaturaCelsius));
+    atualizarElemento("temperatura-gpu", formatarTemperatura(gpuPrincipal.temperaturaCelsius));
+    atualizarElemento("temperatura-disco", formatarTemperatura(discoPrincipal.temperaturaCelsius));
+    atualizarBarra("cpu-temperatura-barra", cpu.temperaturaCelsius, 70, 85, "cpu-temperatura-dot");
+    atualizarBarra("gpu-temperatura-barra", gpuPrincipal.temperaturaCelsius, 70, 85, "gpu-temperatura-dot");
+    atualizarBarra("disco-temperatura-barra", discoPrincipal.temperaturaCelsius, 50, 65, "disco-temperatura-dot");
+
+    atualizarElemento("memoria-uso", formatarPercentagem(memoria.usoPercentagem));
+    atualizarElemento("memoria-total", formatarBytes(memoria.totalBytes));
+    atualizarElemento("memoria-usada", formatarBytes(memoria.usadaBytes));
+    atualizarElemento("memoria-livre", formatarBytes(memoria.livreBytes));
+    atualizarBarra("memoria-barra", memoria.usoPercentagem, 70, 90);
+
+    atualizarElemento(
+      "armazenamento-nome",
+      volumePrincipal ? `Volume principal (${texto(volumePrincipal.montagem)})` : naoEncontrado
+    );
+    atualizarElemento("armazenamento-disponivel", formatarBytes(volumePrincipal?.disponivelBytes));
+    atualizarElemento("armazenamento-tamanho", formatarBytes(volumePrincipal?.tamanhoBytes));
+    atualizarElemento("armazenamento-usado", formatarBytes(volumePrincipal?.usadoBytes));
+    atualizarElemento("armazenamento-percentagem", formatarPercentagem(volumePrincipal?.usoPercentagem));
+    atualizarBarra("armazenamento-barra", volumePrincipal?.usoPercentagem, 75, 90);
+    atualizarElemento(
+      "armazenamento-utilizador",
+      dados.utilizador || "Desligado"
+    );
+
+    atualizarElemento("sistema-nome", texto(computador.nomeSistema));
+    atualizarElemento("sistema-versao", texto(computador.versao));
+    atualizarElemento("sistema-arquitetura", texto(computador.arquitetura));
+    atualizarElemento("sistema-uptime", formatarTempoAtivo(computador.uptimeSegundos));
+    atualizarElemento(
+      "sistema-firmware",
+      texto([dados.firmware?.fabricante, dados.firmware?.versao].filter(Boolean).join(" "))
+    );
+    atualizarElemento(
+      "sistema-placa-mae",
+      texto(dados.placaMae?.modelo || dados.placaMae?.fabricante)
+    );
+    atualizarElemento("sistema-numero-serie", texto(computador.numeroSerie));
+    atualizarElemento(
+      "ultima-atualizacao",
+      dados.momento ? new Date(dados.momento).toLocaleTimeString() : naoEncontrado
+    );
+
+    atualizarComponentes(dados);
+    atualizarAlertas(dados, volumePrincipal);
+  }
+
+  function iniciarAtualizacaoAoVivo() {
+    if (eventosAtivos) return;
+    eventosAtivos = new EventSource("/events");
+
+    eventosAtivos.onopen = () => atualizarElemento("estado-ligacao", "Ligado");
+    eventosAtivos.onmessage = evento => atualizarDashboard(JSON.parse(evento.data));
+    eventosAtivos.onerror = () => {
+      atualizarElemento("estado-ligacao", "Desligado");
+      atualizarElemento("ultima-atualizacao", "Desligado");
+      atualizarElemento("armazenamento-nome", "Desligado");
+      atualizarElemento("armazenamento-disponivel", "Desligado");
+      atualizarElemento("armazenamento-tamanho", "Desligado");
+      atualizarElemento("armazenamento-usado", "Desligado");
+      atualizarElemento("armazenamento-percentagem", "Desligado");
+      atualizarElemento("armazenamento-utilizador", "Desligado");
+      atualizarBarra("armazenamento-barra", null, 75, 90);
+    };
+  }
+
+  iniciarAtualizacaoAoVivo();
+</script>
+</body>
+</html>
