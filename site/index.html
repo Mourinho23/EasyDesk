@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7fb">
+  <meta name="description" content="Descarrega o EasyDesk para Windows, macOS ou Linux e consulta os recursos do teu computador num painel simples.">
+  <title>EasyDesk — Monitorização do teu computador</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./config.js"></script>
+  <script src="./downloads.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#" aria-label="EasyDesk, início">
+      <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+      <span>easy<span>desk</span></span>
+    </a>
+    <nav aria-label="Navegação principal">
+      <a href="#funcionalidades">Funcionalidades</a>
+      <a href="#sensores">Sensores</a>
+      <a class="nav-download" href="#downloads">Transferir</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="live-dot"></span> O teu computador, num só painel</p>
+        <h1>Conhece melhor<br>o teu <span>computador.</span></h1>
+        <p class="hero-description">CPU, memória, armazenamento, rede e sistema — informação útil num painel claro, sem complicações.</p>
+        <a class="button button-primary" href="#downloads">Escolher sistema operativo <span aria-hidden="true">↓</span></a>
+        <p class="hero-caption">Gratuito para Windows, macOS e Linux.</p>
+      </div>
+      <div class="dashboard-preview" aria-label="Pré-visualização do painel EasyDesk">
+        <div class="preview-topbar">
+          <div class="preview-brand"><span class="preview-logo">e</span> EasyDesk</div>
+          <span class="preview-status"><span class="live-dot"></span> Ligado</span>
+        </div>
+        <div class="preview-content">
+          <p class="preview-kicker">O TEU COMPUTADOR</p>
+          <h2>Estação de trabalho</h2>
+          <p class="preview-subtitle">Tudo a funcionar normalmente</p>
+          <div class="preview-metrics">
+            <article class="preview-card">
+              <span class="metric-icon cpu-icon">◉</span>
+              <span class="metric-label">Processador</span>
+              <strong>24<span>%</span></strong>
+              <div class="meter"><i style="width: 24%"></i></div>
+            </article>
+            <article class="preview-card">
+              <span class="metric-icon memory-icon">▥</span>
+              <span class="metric-label">Memória RAM</span>
+              <strong>8,2 <span>GB</span></strong>
+              <div class="meter"><i style="width: 58%"></i></div>
+            </article>
+            <article class="preview-card storage-card">
+              <span class="metric-icon storage-icon">▤</span>
+              <span class="metric-label">Armazenamento</span>
+              <strong>412 <span>GB livres</span></strong>
+              <div class="meter"><i style="width: 41%"></i></div>
+            </article>
+          </div>
+          <div class="preview-footer"><span>Atualização em tempo real</span><span>● ● ●</span></div>
+        </div>
+        <div class="preview-orbit orbit-one"></div>
+        <div class="preview-orbit orbit-two"></div>
+      </div>
+      <div class="hero-shape shape-one"></div>
+      <div class="hero-shape shape-two"></div>
+    </section>
+
+    <section id="funcionalidades" class="features section-wrap">
+      <div class="section-heading">
+        <p class="eyebrow">Visibilidade sem ruído</p>
+        <h2>O essencial, <span>à vista.</span></h2>
+        <p>Informação do sistema apresentada de forma simples, no computador ou noutro dispositivo da mesma rede.</p>
+      </div>
+      <div class="feature-grid">
+        <article class="feature-card">
+          <span class="feature-symbol symbol-purple">⌁</span>
+          <h3>Desempenho</h3>
+          <p>Acompanha CPU, memória e temperaturas disponíveis no teu equipamento.</p>
+        </article>
+        <article class="feature-card">
+          <span class="feature-symbol symbol-blue">▤</span>
+          <h3>Armazenamento</h3>
+          <p>Consulta os discos, o espaço livre e o utilizador ativo no sistema.</p>
+        </article>
+        <article class="feature-card">
+          <span class="feature-symbol symbol-green">⌘</span>
+          <h3>Na tua rede</h3>
+          <p>Abre o painel a partir de outro dispositivo ligado à mesma rede local.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="downloads" class="downloads-section">
+      <div class="section-wrap downloads-wrap">
+        <div class="section-heading">
+          <p class="eyebrow">Instalação simples</p>
+          <h2>O teu sistema.<br><span>O teu EasyDesk.</span></h2>
+          <p>Escolhe o instalador adequado. A página deteta o teu sistema operativo quando possível.</p>
+        </div>
+        <p id="release-status" class="release-status" role="status" aria-live="polite">A verificar os instaladores disponíveis…</p>
+        <div class="download-grid">
+          <article class="download-card" data-platform="windows">
+            <div class="platform-heading">
+              <span class="platform-icon windows-icon" aria-hidden="true">⊞</span>
+              <div><h3>Windows</h3><p>Windows 10 ou posterior</p></div>
+            </div>
+            <p class="platform-description">Instalador para computadores Windows de 64 bits.</p>
+            <a class="button button-download" data-download="windows" href="#downloads" aria-disabled="true" aria-label="Transferir EasyDesk para Windows">Transferir .exe <span aria-hidden="true">↓</span></a>
+            <span class="download-meta" data-meta="windows">Instalador NSIS · x64</span>
+          </article>
+
+          <article class="download-card" data-platform="mac">
+            <div class="platform-heading">
+              <span class="platform-icon mac-icon" aria-hidden="true">⌘</span>
+              <div><h3>macOS</h3><p>Mac com processador Intel ou Apple Silicon</p></div>
+            </div>
+            <p class="platform-description">Imagem de disco para instalar o EasyDesk na pasta Aplicações.</p>
+            <label class="format-label" for="mac-arch">Processador do Mac</label>
+            <select id="mac-arch" name="mac-arch">
+              <option value="" selected>Escolher processador</option>
+              <option value="arm64">Apple Silicon (M1, M2, M3, M4…)</option>
+              <option value="x64">Intel</option>
+            </select>
+            <a class="button button-download" data-download="mac" href="#downloads" aria-disabled="true" aria-label="Transferir EasyDesk para macOS">Transferir .dmg <span aria-hidden="true">↓</span></a>
+            <span class="download-meta" data-meta="mac">Escolhe o processador do Mac</span>
+          </article>
+
+          <article class="download-card linux-card" data-platform="linux">
+            <div class="platform-heading">
+              <span class="platform-icon linux-icon" aria-hidden="true">⌁</span>
+              <div><h3>Linux</h3><p>Distribuições x64</p></div>
+            </div>
+            <p class="platform-description">Escolhe o formato adequado à tua distribuição.</p>
+            <label class="format-label" for="linux-format">Formato do pacote</label>
+            <select id="linux-format" name="linux-format">
+              <option value="AppImage">AppImage — maioria das distribuições</option>
+              <option value="deb">.deb — Debian, Ubuntu, Mint</option>
+              <option value="rpm">.rpm — Fedora, openSUSE</option>
+            </select>
+            <a class="button button-download" data-download="linux" href="#downloads" aria-disabled="true" aria-label="Transferir EasyDesk para Linux">Transferir AppImage <span aria-hidden="true">↓</span></a>
+            <span class="download-meta" data-meta="linux">AppImage · x64</span>
+          </article>
+        </div>
+        <p class="download-footnote">Os instaladores são publicados com cada versão do EasyDesk. Os pacotes Linux são para x64; o AppImage é a opção mais abrangente e pode necessitar de suporte FUSE.</p>
+      </div>
+    </section>
+
+    <section id="sensores" class="sensors section-wrap">
+      <div class="sensor-copy">
+        <p class="eyebrow">Sensores incluídos</p>
+        <h2>Os leitores vão<br><span>incluídos.</span></h2>
+        <p>O instalador inclui o EasyDesk e os leitores de sensores suportados pela aplicação. A app usa as interfaces disponibilizadas pelo sistema operativo.</p>
+      </div>
+      <div class="sensor-note">
+        <span class="note-icon" aria-hidden="true">i</span>
+        <div>
+          <h3>Disponibilidade depende do equipamento</h3>
+          <p>O instalador não instala controladores do fabricante nem módulos de kernel. A leitura de temperaturas depende dos sensores que o hardware e o sistema operativo expõem; por isso, nem todas as máquinas apresentam os mesmos dados.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <a class="brand footer-brand" href="#"><span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span><span>easy<span>desk</span></span></a>
+    <p>Um painel claro para o teu computador.</p>
+    <span>© <span id="year"></span> EasyDesk</span>
+  </footer>
+</body>
+</html>
