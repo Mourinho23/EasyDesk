@@ -67,15 +67,17 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           path: release-assets
-      - name: Create release and upload installers
+      - name: Publish installers
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ github.ref_name }}
           REPOSITORY: ${{ github.repository }}
         run: |
-          gh release create "$RELEASE_TAG" \
-            --repo "$REPOSITORY" \
-            --title "EasyDesk $RELEASE_TAG" \
-            --generate-notes
+          if ! gh release view "$RELEASE_TAG" --repo "$REPOSITORY" >/dev/null 2>&1; then
+            gh release create "$RELEASE_TAG" \
+              --repo "$REPOSITORY" \
+              --title "EasyDesk $RELEASE_TAG" \
+              --generate-notes
+          fi
           find release-assets -type f -print0 | \
-            xargs -0 gh release upload "$RELEASE_TAG" --repo "$REPOSITORY"
+            xargs -0 gh release upload "$RELEASE_TAG" --repo "$REPOSITORY" --clobber
