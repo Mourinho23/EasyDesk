@@ -2,27 +2,10 @@ const express = require("express");
 const cors = require("cors");
 const os = require("os");
 const path = require("path");
-const { execFileSync } = require("child_process");
 const si = require("systeminformation");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
-function verificarEstadoXcode() {
-  if (process.platform !== "darwin") return null;
-
-  try {
-    execFileSync("xcodebuild", ["-checkFirstLaunchStatus"], {
-      stdio: "ignore",
-      timeout: 3000
-    });
-    return "ready";
-  } catch (erro) {
-    return erro.code === "ENOENT" ? "not-installed" : "setup-required";
-  }
-}
-
-const estadoXcode = verificarEstadoXcode();
 
 app.use(cors());
 app.use(express.static(path.join(__dirname, "Interface")));
@@ -99,8 +82,7 @@ async function recolherDados() {
     utilizador: os.userInfo().username || null,
 
     ambiente: {
-      plataforma: process.platform,
-      xcode: estadoXcode
+      plataforma: process.platform
     },
 
     computador: {
@@ -257,6 +239,8 @@ const interfaceLocal = interfacesRede.find(interfaceRede => {
 });
 const enderecoLocal = interfaceLocal?.address || "127.0.0.1";
 
-app.listen(PORT, enderecoLocal, () => {
+const servidor = app.listen(PORT, enderecoLocal, () => {
   console.log(`Painel disponível em http://${enderecoLocal}:${PORT}`);
 });
+
+module.exports = servidor;
