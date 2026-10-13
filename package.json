@@ -1,22 +1,23 @@
 {
   "name": "easydesk",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Painel local para monitorizar o hardware e o sistema.",
   "main": "desktop.js",
   "scripts": {
     "start": "node server.js",
     "desktop": "electron .",
+    "predist:win": "dotnet publish sensor-service\\EasyDesk.SensorService.csproj --configuration Release --output sensor-service\\publish",
     "dist:win": "electron-builder --win nsis",
     "dist:mac": "electron-builder --mac dmg",
     "dist:linux": "electron-builder --linux AppImage",
-    "test": "node --check server.js && node --check desktop.js"
+    "test": "node --test"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "type": "commonjs",
   "engines": {
-    "node": ">=18"
+    "node": ">=22.12"
   },
   "dependencies": {
     "cors": "^2.8.6",
@@ -34,26 +35,38 @@
   "build": {
     "appId": "com.easydesk.app",
     "productName": "EasyDesk",
+    "compression": "maximum",
     "directories": {
       "output": "release"
     },
     "files": [
       "desktop.js",
       "server.js",
+      "sensor-data.js",
       "Interface/**/*"
     ],
     "asarUnpack": [
-      "node_modules/systeminformation/**",
       "node_modules/macos-temperature-sensor/**",
       "node_modules/osx-temperature-sensor/**"
     ],
     "win": {
       "target": "nsis",
+      "extraResources": [
+        {
+          "from": "sensor-service/publish",
+          "to": "sensor-service",
+          "filter": [
+            "**/*"
+          ]
+        }
+      ],
       "artifactName": "EasyDesk-Setup-${version}.${ext}"
     },
     "nsis": {
       "oneClick": false,
-      "allowToChangeInstallationDirectory": true
+      "allowToChangeInstallationDirectory": true,
+      "allowElevation": true,
+      "include": "build/installer.nsh"
     },
     "mac": {
       "target": "dmg",
@@ -64,15 +77,21 @@
       "target": [
         {
           "target": "AppImage",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         },
         {
           "target": "deb",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         },
         {
           "target": "rpm",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
       ],
       "artifactName": "EasyDesk-${version}-${arch}.${ext}",

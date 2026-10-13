@@ -3,6 +3,7 @@ const cors = require("cors");
 const os = require("os");
 const path = require("path");
 const si = require("systeminformation");
+const { readSensorData } = require("./sensor-data");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -11,6 +12,7 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, "Interface")));
 
 let clientes = [];
+let ultimoErroSensores = null;
 
 function arredondar(valor, casas = 1) {
   if (valor === undefined || valor === null || Number.isNaN(valor)) {
@@ -35,7 +37,8 @@ async function recolherDados() {
     sistemaOperativo,
     carga,
     firmware,
-    placaMae
+    placaMae,
+    sensoresAdicionais
   ] = await Promise.allSettled([
     si.system(),
     si.cpu(),
@@ -50,18 +53,46 @@ async function recolherDados() {
     si.osInfo(),
     si.currentLoad(),
     si.bios(),
-    si.baseboard()
+    si.baseboard(),
+    readSensorData()
   ]);
 
   const resultado = valor => {
     return valor.status === "fulfilled" ? valor.value : null;
   };
 
+  const sensores = resultado(sensoresAdicionais) || {};
+  const erroSensores = sensoresAdicionais.status === "rejected"
+    ? sensoresAdicionais.reason.message
+    : sensores.error || null;
+  if (erroSensores && erroSensores !== ultimoErroSensores) {
+    console.error("Não foi possível ler os sensores adicionais:", erroSensores);
+  }
+  ultimoErroSensores = erroSensores;
+
   const temp = resultado(temperatura) || {};
   const mem = resultado(memoria) || {};
   const load = resultado(carga) || {};
   const osInfo = resultado(sistemaOperativo) || {};
+  const controladoresGrafico = resultado(graficos)?.controllers || [];
+  const discosFisicos = resultado(discos) || [];
   const volumesArmazenamento = resultado(armazenamento) || [];
+  const controladoresComLeitura = controladoresGrafico.length
+    ? controladoresGrafico
+    : Number.isFinite(sensores.temperaturaCelsius?.gpu) ||
+        Number.isFinite(sensores.power?.gpuWatts)
+      ? [{
+        temperatureGpu: sensores.temperaturaCelsius?.gpu,
+        utilizationGpu: null,
+        memoryUsed: null,
+        vram: null
+      }]
+      : [];
+  const discosComLeitura = discosFisicos.length
+    ? discosFisicos
+    : Number.isFinite(sensores.temperaturaCelsius?.disk)
+      ? [{ temperature: sensores.temperaturaCelsius.disk }]
+      : [];
   const unidadeSistema = process.platform === "win32"
     ? (process.env.SystemDrive || "C:").toLowerCase()
     : null;
@@ -116,7 +147,7 @@ async function recolherDados() {
       nucleosFisicos: resultado(cpu)?.physicalCores || null,
       nucleosLogicos: resultado(cpu)?.cores || null,
       usoPercentagem: arredondar(load.currentLoad),
-      temperaturaCelsius: arredondar(temp.main)
+      temperaturaCelsius: arredondar(temp.main ?? sensores.temperaturaCelsius?.cpu)
     },
 
     memoria: {
@@ -128,7 +159,7 @@ async function recolherDados() {
         : null
     },
 
-    discos: (resultado(discos) || []).map(disco => ({
+    discos: discosComLeitura.map((disco, indice) => ({
       dispositivo: disco.device || null,
       nome: disco.name || null,
       fabricante: disco.vendor || null,
@@ -136,7 +167,9 @@ async function recolherDados() {
       tamanhoBytes: disco.size || null,
       tipo: disco.type || null,
       interface: disco.interfaceType || null,
-      temperaturaCelsius: arredarTemperatura(disco.temperature)
+      temperaturaCelsius: arredarTemperatura(
+        disco.temperature ?? (indice === 0 ? sensores.temperaturaCelsius?.disk : null)
+      )
     })),
 
     armazenamento: volumesArmazenamento.map(disco => ({
@@ -149,11 +182,13 @@ async function recolherDados() {
       principal: disco === volumePrincipal
     })),
 
-    gpu: (resultado(graficos)?.controllers || []).map(gpu => ({
+    gpu: controladoresComLeitura.map((gpu, indice) => ({
       fabricante: gpu.vendor || null,
       modelo: gpu.model || null,
       memoriaBytes: gpu.vram ? gpu.vram * 1024 * 1024 : null,
-      temperaturaCelsius: arredarTemperatura(gpu.temperatureGpu),
+      temperaturaCelsius: arredarTemperatura(
+        gpu.temperatureGpu ?? (indice === 0 ? sensores.temperaturaCelsius?.gpu : null)
+      ),
       usoPercentagem: arredondar(gpu.utilizationGpu),
       memoriaUsadaPercentagem: arredondar(gpu.memoryUsed)
     })),
@@ -174,6 +209,22 @@ async function recolherDados() {
       total: resultado(processos)?.all || null,
       ativos: resultado(processos)?.running || null,
       bloqueados: resultado(processos)?.blocked || null
+    },
+
+    sensores: {
+      estado: erroSensores ? "erro" : sensores.status || "indisponivel",
+      erro: erroSensores
+    },
+
+    energia: {
+      estado: erroSensores ? "erro" : sensores.status || "indisponivel",
+      cpuWatts: arredondar(sensores.power?.cpuWatts, 2),
+      gpuWatts: arredondar(sensores.power?.gpuWatts, 2),
+      sistemaWatts: arredondar(sensores.power?.systemWatts, 2),
+      eficienciaFontePercentagem: arredondar(
+        sensores.power?.powerSupplyEfficiencyPercent,
+        1
+      )
     }
   };
 }

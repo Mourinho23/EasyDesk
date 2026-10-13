@@ -388,10 +388,10 @@ header p {
 
   <article class="card">
     <h2>Consumo de energia</h2>
-    <div class="metric"><span class="label">CPU</span><strong class="value">Não encontrado</strong></div>
-    <div class="metric"><span class="label">GPU</span><strong class="value">Não encontrado</strong></div>
-    <div class="metric"><span class="label">Sistema total</span><strong class="value">Não encontrado</strong></div>
-    <div class="metric"><span class="label">Eficiência da fonte</span><strong class="value">Não encontrado</strong></div>
+    <div class="metric"><span class="label">CPU</span><strong id="energia-cpu" class="value">Não encontrado</strong></div>
+    <div class="metric"><span class="label">GPU</span><strong id="energia-gpu" class="value">Não encontrado</strong></div>
+    <div class="metric"><span class="label">Sistema total</span><strong id="energia-sistema" class="value">Não encontrado</strong></div>
+    <div class="metric"><span class="label">Eficiência da fonte</span><strong id="energia-fonte" class="value">Não encontrado</strong></div>
   </article>
 
   <article class="card">
@@ -477,6 +477,9 @@ header p {
 
   const formatarTemperatura = valor =>
     numeroValido(valor) ? `${valor} °C` : naoEncontrado;
+
+  const formatarPotencia = valor =>
+    numeroValido(valor) ? `${valor} W` : naoEncontrado;
 
   function atualizarElemento(id, valor) {
     const elemento = document.getElementById(id);
@@ -662,8 +665,12 @@ header p {
     } else if (plataforma === "win32" && temperaturasIndisponiveis) {
       adicionarAviso(
         container,
-        "Sensores do Windows indisponíveis",
-        "O Windows não expôs leituras de temperatura compatíveis através do firmware e dos controladores instalados. O suporte depende do hardware e dos controladores do fabricante."
+        dados.sensores?.estado === "not-installed"
+          ? "Sensores adicionais não instalados"
+          : "Sensores do Windows indisponíveis",
+        dados.sensores?.estado === "not-installed"
+          ? "Para instalar o auxiliar de temperatura e energia, escolhe a opção com sensores no instalador do EasyDesk. A instalação pede permissões de administrador."
+          : "O hardware ou os controladores instalados não disponibilizaram leituras de temperatura compatíveis."
       );
     } else if (plataforma === "linux" && temperaturasIndisponiveis) {
       adicionarAviso(
@@ -679,11 +686,36 @@ header p {
       );
     }
 
-    if (plataforma !== "darwin") {
+    const energia = dados.energia || {};
+    if (energia.estado === "requires-admin") {
       adicionarAviso(
         container,
-        "Consumo de energia",
-        "A leitura do consumo elétrico ainda não está implementada para este sistema operativo."
+        "Leitura de energia requer permissões",
+        "No macOS, a leitura em watts usa o powermetrics do sistema e requer privilégios de administrador."
+      );
+    } else if (plataforma === "win32" && energia.estado === "not-installed") {
+      adicionarAviso(
+        container,
+        "Sensores de energia não instalados",
+        "Escolhe a opção com sensores no instalador do Windows para incluir o serviço de monitorização. A leitura depende dos sensores expostos pelo hardware."
+      );
+    } else if (energia.estado === "erro") {
+      adicionarAviso(
+        container,
+        "Erro ao ler sensores de energia",
+        texto(energia.erro || dados.sensores?.erro || "O auxiliar de sensores não respondeu.")
+      );
+    } else if (
+      !numeroValido(energia.cpuWatts) &&
+      !numeroValido(energia.gpuWatts) &&
+      !numeroValido(energia.sistemaWatts)
+    ) {
+      adicionarAviso(
+        container,
+        "Consumo de energia indisponível",
+        plataforma === "linux"
+          ? "Só são mostrados valores de potência quando o kernel expõe contadores de energia compatíveis."
+          : "O hardware ou o sistema operativo não disponibilizou uma leitura de potência compatível."
       );
     }
   }
@@ -730,6 +762,7 @@ header p {
     const armazenamento = Array.isArray(dados.armazenamento)
       ? dados.armazenamento
       : [];
+    const energia = dados.energia || {};
     const volumePrincipal = armazenamento.find(volume => volume.principal) ||
       armazenamento.find(volume =>
       volume.montagem === "/System/Volumes/Data"
@@ -756,6 +789,15 @@ header p {
     atualizarElemento("temperatura-cpu", formatarTemperatura(cpu.temperaturaCelsius));
     atualizarElemento("temperatura-gpu", formatarTemperatura(gpuPrincipal.temperaturaCelsius));
     atualizarElemento("temperatura-disco", formatarTemperatura(discoPrincipal.temperaturaCelsius));
+    atualizarElemento("energia-cpu", formatarPotencia(energia.cpuWatts));
+    atualizarElemento("energia-gpu", formatarPotencia(energia.gpuWatts));
+    atualizarElemento("energia-sistema", formatarPotencia(energia.sistemaWatts));
+    atualizarElemento(
+      "energia-fonte",
+      numeroValido(energia.eficienciaFontePercentagem)
+        ? `${energia.eficienciaFontePercentagem}%`
+        : naoEncontrado
+    );
     atualizarBarra("cpu-temperatura-barra", cpu.temperaturaCelsius, 70, 85, "cpu-temperatura-dot");
     atualizarBarra("gpu-temperatura-barra", gpuPrincipal.temperaturaCelsius, 70, 85, "gpu-temperatura-dot");
     atualizarBarra("disco-temperatura-barra", discoPrincipal.temperaturaCelsius, 50, 65, "disco-temperatura-dot");

@@ -1,0 +1,3 @@
+EasyDesk Sensor Service uses LibreHardwareMonitorLib 0.9.6.
+LibreHardwareMonitorLib is licensed under the Mozilla Public License 2.0.
+Source code and license: https://github.com/LibreHardwareMonitor/LibreHardwareMonitor

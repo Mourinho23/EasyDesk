@@ -1,0 +1,7 @@
+node_modules/
+release/
+dist/
+*.log
+sensor-service/bin/
+sensor-service/obj/
+sensor-service/publish/

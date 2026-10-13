@@ -35,7 +35,7 @@ Descarrega o instalador adequado no site EasyDesk:
 
 ### Requisitos
 
-- Node.js 18 ou superior
+- Node.js 22.12 ou superior
 - npm (incluído com Node.js)
 
 Na pasta do projeto, instala as dependências e inicia a aplicação desktop:
@@ -57,7 +57,7 @@ No Windows, também podes abrir o atalho de desenvolvimento `Iniciar EasyDesk.ln
 
 ## Criar instaladores
 
-Instala Node.js 18 ou superior e executa os comandos a partir da pasta do projeto. Cria cada instalador no respetivo sistema operativo:
+Instala Node.js 22.12 ou superior e executa os comandos a partir da pasta do projeto. Para compilar o auxiliar opcional de sensores do Windows, instala também o .NET SDK 8. Cria cada instalador no respetivo sistema operativo:
 
 | Sistema onde estás a compilar | Comando | Ficheiro gerado |
 | --- | --- | --- |
@@ -75,9 +75,11 @@ Depois executa **apenas o comando correspondente ao sistema onde estás a compil
 
 ## Sensores e leituras
 
-Os instaladores incluem a aplicação e as bibliotecas de leitura de sensores que fazem parte do EasyDesk. A app inclui leitores de temperatura para Macs Intel e Apple Silicon. Em Linux, usa as leituras que o kernel e o hardware disponibilizam. No Windows, a disponibilidade depende dos sensores expostos pelo firmware e pelos controladores do fabricante.
+O instalador Windows apresenta duas opções: sem o auxiliar adicional de sensores ou com o auxiliar de temperatura e potência baseado no LibreHardwareMonitor. A segunda opção requer permissões de administrador, instala um serviço protegido do Windows e necessita do .NET Framework 4.7.2 ou superior. O serviço só é iniciado enquanto o EasyDesk está aberto e é parado quando a aplicação fecha. As leituras continuam dependentes dos sensores expostos pelo hardware e pelos controladores.
 
-Instalar a aplicação não garante que todos os sensores estejam disponíveis: a app não instala controladores do fabricante nem módulos de kernel, e nenhum programa consegue ler sensores que o sistema operativo ou o hardware não exponham. A leitura do consumo elétrico também não está disponível em todos os sistemas.
+No macOS, o instalador inclui o leitor adequado a Macs Intel ou Apple Silicon. A leitura de potência usa o `powermetrics` fornecido pelo sistema e requer privilégios de administrador. No Linux, as temperaturas são lidas diretamente dos sensores expostos pelo kernel; a potência da CPU só fica disponível quando o kernel publica contadores Intel/AMD RAPL.
+
+Os valores de potência total do sistema e de eficiência da fonte só aparecem se o próprio hardware expuser esses sensores. O EasyDesk não estima nem inventa leituras. Nenhum instalador instala controladores do fabricante ou módulos de kernel, e a disponibilidade varia conforme o equipamento e o sistema operativo.
 
 ## Acesso a partir da rede local
 

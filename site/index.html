@@ -109,7 +109,7 @@
               <span class="platform-icon windows-icon" aria-hidden="true">⊞</span>
               <div><h3>Windows</h3><p>Windows 10 ou posterior</p></div>
             </div>
-            <p class="platform-description">Instalador para computadores Windows de 64 bits.</p>
+            <p class="platform-description">Instalador x64. A opção de sensores de temperatura e potência requer permissões de administrador.</p>
             <a class="button button-download" data-download="windows" href="#downloads" aria-disabled="true" aria-label="Transferir EasyDesk para Windows">Transferir .exe <span aria-hidden="true">↓</span></a>
             <span class="download-meta" data-meta="windows">Instalador NSIS · x64</span>
           </article>
@@ -119,7 +119,7 @@
               <span class="platform-icon mac-icon" aria-hidden="true">⌘</span>
               <div><h3>macOS</h3><p>Mac com processador Intel ou Apple Silicon</p></div>
             </div>
-            <p class="platform-description">Imagem de disco para instalar o EasyDesk na pasta Aplicações.</p>
+            <p class="platform-description">Imagem de disco com leitores de temperatura para Macs Intel e Apple Silicon. A leitura de potência requer privilégios de administrador.</p>
             <label class="format-label" for="mac-arch">Processador do Mac</label>
             <select id="mac-arch" name="mac-arch">
               <option value="" selected>Escolher processador</option>
@@ -135,7 +135,7 @@
               <span class="platform-icon linux-icon" aria-hidden="true">⌁</span>
               <div><h3>Linux</h3><p>Distribuições x64</p></div>
             </div>
-            <p class="platform-description">Escolhe o formato adequado à tua distribuição.</p>
+            <p class="platform-description">Escolhe o formato adequado à tua distribuição. A potência da CPU depende dos contadores expostos pelo kernel.</p>
             <label class="format-label" for="linux-format">Formato do pacote</label>
             <select id="linux-format" name="linux-format">
               <option value="AppImage">AppImage — maioria das distribuições</option>
@@ -154,13 +154,13 @@
       <div class="sensor-copy">
         <p class="eyebrow">Sensores incluídos</p>
         <h2>Os leitores vão<br><span>incluídos.</span></h2>
-        <p>O instalador inclui o EasyDesk e os leitores de sensores suportados pela aplicação. A app usa as interfaces disponibilizadas pelo sistema operativo.</p>
+        <p>O instalador inclui os leitores adequados a cada sistema. No Windows podes escolher o auxiliar de temperatura e potência; no macOS e Linux o EasyDesk usa as ferramentas e interfaces próprias de cada sistema.</p>
       </div>
       <div class="sensor-note">
         <span class="note-icon" aria-hidden="true">i</span>
         <div>
           <h3>Disponibilidade depende do equipamento</h3>
-          <p>O instalador não instala controladores do fabricante nem módulos de kernel. A leitura de temperaturas depende dos sensores que o hardware e o sistema operativo expõem; por isso, nem todas as máquinas apresentam os mesmos dados.</p>
+          <p>No Windows, a opção com sensores pede permissões de administrador e instala um serviço que só funciona enquanto o EasyDesk está aberto. No macOS, a leitura de potência requer privilégios de administrador; no Linux, depende dos sensores e contadores expostos pelo kernel. Leituras de potência total e eficiência da fonte só aparecem se o hardware as disponibilizar. O EasyDesk não instala controladores do fabricante nem módulos de kernel.</p>
         </div>
       </div>
     </section>
