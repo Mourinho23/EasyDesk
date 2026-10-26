@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EasyDesk — Guia de Marca & Apresentação de Logotipo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: #111726;
+      --card-border: rgba(255, 255, 255, 0.08);
+      --primary: #6366f1;
+      --primary-light: #818cf8;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --accent-cyan: #38bdf8;
+      --accent-emerald: #34d399;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 40px 24px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 999px;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: var(--primary-light);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #ffffff 40%, #a5b4fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    p.subtitle {
+      color: var(--muted);
+      font-size: 1.15rem;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 28px;
+      margin-bottom: 40px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-desc {
+      color: var(--muted);
+      font-size: 0.88rem;
+      margin-bottom: 20px;
+    }
+
+    .preview-box {
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 260px;
+      padding: 24px;
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .preview-box.dark {
+      background: #080c14;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .preview-box.light {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+    }
+
+    .preview-box.gradient-preview {
+      background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
+    }
+
+    .preview-box img, .preview-box object {
+      max-width: 100%;
+      max-height: 210px;
+      object-fit: contain;
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,0.15));
+    }
+
+    .actions {
+      margin-top: auto;
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      flex: 1;
+      text-align: center;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: #4f46e5;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      border: 1px solid var(--card-border);
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    /* Scales Showcase */
+    .scales-card {
+      grid-column: 1 / -1;
+    }
+
+    .scales-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 36px;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 30px;
+      background: #080c14;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .scale-item {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .scale-item span {
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-family: monospace;
+    }
+
+    /* Concept Section */
+    .concept-section {
+      background: linear-gradient(180deg, #111726 0%, #0d121e 100%);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 36px;
+      margin-bottom: 40px;
+    }
+
+    .concept-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-top: 24px;
+    }
+
+    .concept-pill {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 14px;
+      padding: 20px;
+    }
+
+    .concept-pill h4 {
+      color: var(--primary-light);
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+
+    .concept-pill p {
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .color-swatches {
+      display: flex;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .swatch {
+      flex: 1;
+      height: 48px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+      padding-top: 20px;
+      border-top: 1px solid var(--card-border);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge">Identidade Visual & Portefólio</div>
+      <h1>EasyDesk Brand Identity</h1>
+      <p class="subtitle">Logótipo, ícone de aplicação desktop e recursos visuais modernos para a aplicação de monitorização de sistema e hardware.</p>
+    </header>
+
+    <!-- Concept Breakdown -->
+    <section class="concept-section">
+      <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 1.6rem; letter-spacing: -0.03em;">Conceito Visual</h2>
+      <p style="color: var(--muted); font-size: 0.95rem; margin-top: 4px;">Desenvolvido para representar precisão técnica, velocidade e simplicidade no ecossistema desktop e web.</p>
+
+      <div class="concept-grid">
+        <div class="concept-pill">
+          <h4>1. O Monograma "E"</h4>
+          <p>As 3 barras do 'E' simbolizam métricas de desempenho em tempo real: Processador (CPU), Leituras Térmicas/Sensores e Memória/Armazenamento.</p>
+        </div>
+        <div class="concept-pill">
+          <h4>2. O "Desk" & Monitor</h4>
+          <p>A silhueta integra uma workstation/monitor ultra-moderno com suporte estilizado, identificando de imediato a aplicação de ambiente de trabalho.</p>
+        </div>
+        <div class="concept-pill">
+          <h4>3. Telemetria & Live Dot</h4>
+          <p>O indicador verde esmeralda no topo direito representa o estado ativo ("Ligado/Live") característico do painel em tempo real da aplicação.</p>
+        </div>
+      </div>
+
+      <div style="margin-top: 28px;">
+        <h4 style="font-size: 0.95rem; color: var(--muted); margin-bottom: 10px;">Paleta de Cores Oficial</h4>
+        <div class="color-swatches">
+          <div class="swatch" style="background: #4f46e5;">#4F46E5</div>
+          <div class="swatch" style="background: #6366f1;">#6366F1</div>
+          <div class="swatch" style="background: #818cf8;">#818CF8</div>
+          <div class="swatch" style="background: #38bdf8;">#38BDF8</div>
+          <div class="swatch" style="background: #34d399;">#34D399</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Showcase Cards -->
+    <div class="grid">
+      <!-- 1. Horizontal Logo Dark -->
+      <div class="card">
+        <div class="card-title">
+          <span>Logótipo Horizontal (Dark)</span>
+          <span style="font-size: 0.72rem; padding: 2px 8px; border-radius: 4px; background: rgba(255,255,255,0.08);">SVG Vetorial</span>
+        </div>
+        <div class="card-desc">Ideal para o README do GitHub, documentação dark mode e portefólio.</div>
+        <div class="preview-box dark">
+          <img src="EasyDesk-logo-horizontal-dark.svg" alt="EasyDesk Logo Dark">
+        </div>
+        <div class="actions">
+          <a href="EasyDesk-logo-horizontal-dark.svg" download class="btn btn-primary">Descarregar SVG</a>
+        </div>
+      </div>
+
+      <!-- 2. Horizontal Logo Light -->
+      <div class="card">
+        <div class="card-title">
+          <span>Logótipo Horizontal (Light)</span>
+          <span style="font-size: 0.72rem; padding: 2px 8px; border-radius: 4px; background: rgba(255,255,255,0.08);">SVG Vetorial</span>
+        </div>
+        <div class="card-desc">Perfeito para o site de downloads (site/index.html) e fundos claros.</div>
+        <div class="preview-box light">
+          <img src="EasyDesk-logo-horizontal.svg" alt="EasyDesk Logo Light">
+        </div>
+        <div class="actions">
+          <a href="EasyDesk-logo-horizontal.svg" download class="btn btn-primary">Descarregar SVG</a>
+        </div>
+      </div>
+
+      <!-- 3. Desktop App Icon SVG -->
+      <div class="card">
+        <div class="card-title">
+          <span>Ícone de Aplicação (Master 1024)</span>
+          <span style="font-size: 0.72rem; padding: 2px 8px; border-radius: 4px; background: rgba(255,255,255,0.08);">SVG 1024x1024</span>
+        </div>
+        <div class="card-desc">Squircle moderno para instaladores Windows (.exe), macOS (.dmg) e Linux (.AppImage).</div>
+        <div class="preview-box gradient-preview">
+          <img src="EasyDesk-icon.svg" style="max-height: 180px;" alt="EasyDesk Master Icon">
+        </div>
+        <div class="actions">
+          <a href="EasyDesk-icon.svg" download class="btn btn-primary">Descarregar SVG</a>
+        </div>
+      </div>
+
+      <!-- 4. Photorealistic Brand Presentation Render -->
+      <div class="card">
+        <div class="card-title">
+          <span>Mockup de Apresentação</span>
+          <span style="font-size: 0.72rem; padding: 2px 8px; border-radius: 4px; background: rgba(255,255,255,0.08);">High-Res Render</span>
+        </div>
+        <div class="card-desc">Render realista de alta resolução para cartões de portefólio, Behance e GitHub banner.</div>
+        <div class="preview-box dark" style="padding: 0;">
+          <img src="easydesk-logo-presentation.jpg" style="max-height: 260px; width: 100%; object-fit: cover; border-radius: 14px;" alt="EasyDesk Presentation">
+        </div>
+        <div class="actions">
+          <a href="easydesk-logo-presentation.jpg" download class="btn btn-primary">Ver Imagem HD</a>
+        </div>
+      </div>
+
+      <!-- 5. 3D Squircle App Icon Render -->
+      <div class="card">
+        <div class="card-title">
+          <span>Render 3D de Aplicação Desktop</span>
+          <span style="font-size: 0.72rem; padding: 2px 8px; border-radius: 4px; background: rgba(255,255,255,0.08);">High-Res Render</span>
+        </div>
+        <div class="card-desc">Ícone volumétrico com iluminação de estúdio para dock macOS e atalhos Windows.</div>
+        <div class="preview-box dark" style="padding: 0;">
+          <img src="easydesk-app-icon.jpg" style="max-height: 260px; width: 100%; object-fit: cover; border-radius: 14px;" alt="EasyDesk 3D App Icon">
+        </div>
+        <div class="actions">
+          <a href="easydesk-app-icon.jpg" download class="btn btn-primary">Ver Imagem HD</a>
+        </div>
+      </div>
+
+      <!-- 6. Standalone Glyph Mark -->
+      <div class="card">
+        <div class="card-title">
+          <span>Símbolo / Favicon (Mark Isolado)</span>
+          <span style="font-size: 0.72rem; padding: 2px 8px; border-radius: 4px; background: rgba(255,255,255,0.08);">SVG Transparente</span>
+        </div>
+        <div class="card-desc">Emblema sem fundo para cabeçalhos compactos, barras de título e favicons.</div>
+        <div class="preview-box dark">
+          <img src="EasyDesk-mark.svg" style="max-height: 160px;" alt="EasyDesk Mark">
+        </div>
+        <div class="actions">
+          <a href="EasyDesk-mark.svg" download class="btn btn-primary">Descarregar SVG</a>
+        </div>
+      </div>
+
+      <!-- 7. Responsiveness & Scale Test -->
+      <div class="card scales-card">
+        <div class="card-title">
+          <span>Teste de Escala & Legibilidade do Ícone</span>
+        </div>
+        <div class="card-desc">Garante nitidez consistente desde o micro-favicon até à dock de ecrãs Retina / 4K.</div>
+        <div class="scales-row">
+          <div class="scale-item">
+            <img src="EasyDesk-icon.svg" style="width: 16px; height: 16px;" alt="16px">
+            <span>16px (Favicon)</span>
+          </div>
+          <div class="scale-item">
+            <img src="EasyDesk-icon.svg" style="width: 32px; height: 32px;" alt="32px">
+            <span>32px (Menu)</span>
+          </div>
+          <div class="scale-item">
+            <img src="EasyDesk-icon.svg" style="width: 48px; height: 48px;" alt="48px">
+            <span>48px (Barra)</span>
+          </div>
+          <div class="scale-item">
+            <img src="EasyDesk-icon.svg" style="width: 64px; height: 64px;" alt="64px">
+            <span>64px (Atalho)</span>
+          </div>
+          <div class="scale-item">
+            <img src="EasyDesk-icon.svg" style="width: 96px; height: 96px;" alt="96px">
+            <span>96px (Doca)</span>
+          </div>
+          <div class="scale-item">
+            <img src="EasyDesk-icon.svg" style="width: 140px; height: 140px;" alt="140px">
+            <span>140px (Hero)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <p>EasyDesk &copy; Identidade criada para apresentação de portefólio profissional.</p>
+    </footer>
+  </div>
+</body>
+</html>
