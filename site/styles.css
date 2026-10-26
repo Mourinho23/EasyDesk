@@ -20,11 +20,7 @@ button, select { font: inherit; }
 .site-header { height: 78px; padding: 0 max(6vw, calc((100vw - 1180px) / 2)); display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eef0f5; background: rgba(255,255,255,.92); }
 .brand { display: inline-flex; align-items: center; gap: 10px; font: 700 1.35rem "Space Grotesk", sans-serif; letter-spacing: -.06em; }
 .brand > span:last-child > span { color: var(--purple); }
-.brand-mark { width: 29px; height: 29px; display: flex; align-items: end; gap: 3px; padding: 6px; border-radius: 9px; background: var(--purple); }
-.brand-mark span { flex: 1; border-radius: 2px; background: #fff; }
-.brand-mark span:nth-child(1) { height: 45%; }
-.brand-mark span:nth-child(2) { height: 75%; }
-.brand-mark span:nth-child(3) { height: 100%; }
+.brand-mark { width: 29px; height: 29px; flex: 0 0 auto; border-radius: 8px; object-fit: cover; }
 nav { display: flex; align-items: center; gap: 34px; color: #50576a; font-size: .91rem; font-weight: 600; }
 nav a:hover { color: var(--purple-dark); }
 .nav-download { padding: 10px 17px; border-radius: 9px; color: #fff; background: var(--ink); }
@@ -116,7 +112,7 @@ h1 span, .section-heading h2 span, .sensor-copy h2 span { color: var(--purple); 
 .site-footer { min-height: 91px; display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 20px max(6vw, calc((100vw - 1180px) / 2)); border-top: 1px solid #edf0f5; color: #9298a8; font-size: .78rem; }
 .site-footer p { margin: 0; }
 .footer-brand { color: var(--ink); font-size: 1.08rem; }
-.footer-brand .brand-mark { width: 25px; height: 25px; border-radius: 8px; }
+.footer-brand .brand-mark { width: 25px; height: 25px; }
 
 @media (max-width: 850px) {
   .hero { grid-template-columns: 1fr; gap: 44px; padding-top: 75px; }
