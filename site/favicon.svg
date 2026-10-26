@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <!-- Gradients for the brand mark -->
+    <linearGradient id="markSpineGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#818CF8" />
+      <stop offset="50%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#4F46E5" />
+    </linearGradient>
+
+    <linearGradient id="markBarTopGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#818CF8" />
+      <stop offset="100%" stop-color="#C084FC" />
+    </linearGradient>
+
+    <linearGradient id="markBarMidGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38BDF8" />
+      <stop offset="100%" stop-color="#34D399" />
+    </linearGradient>
+
+    <linearGradient id="markBarBotGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#4F46E5" />
+      <stop offset="100%" stop-color="#6366F1" />
+    </linearGradient>
+
+    <linearGradient id="markDeskBaseGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#4338CA" />
+      <stop offset="50%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#818CF8" />
+    </linearGradient>
+
+    <!-- Glow filters -->
+    <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+
+    <radialGradient id="liveDotGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#34D399" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#34D399" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Modern Screen / Workstation Frame (Minimalist & Precision-Engineered) -->
+  <!-- Outer Display Housing -->
+  <rect x="76" y="68" width="360" height="268" rx="44" stroke="url(#markSpineGrad)" stroke-width="20" stroke-linecap="round" fill="none" opacity="0.9" />
+
+  <!-- Monitor Stand Stem -->
+  <path d="M236 338 L224 402 H288 L276 338 Z" fill="url(#markSpineGrad)" opacity="0.85" />
+
+  <!-- Workstation Desk Base (Anchoring Pill) -->
+  <rect x="156" y="402" width="200" height="24" rx="12" fill="url(#markDeskBaseGrad)" />
+
+  <!-- Stylized 'E' Inside Display formed by dynamic Telemetry / Activity bars -->
+  <!-- Left Spine of 'E' -->
+  <rect x="138" y="126" width="26" height="152" rx="13" fill="url(#markSpineGrad)" />
+
+  <!-- Top Bar (Monitor Activity / CPU Meter) -->
+  <rect x="138" y="126" width="210" height="26" rx="13" fill="url(#markBarTopGrad)" />
+
+  <!-- Middle Bar (Telemetry Pulse / Hardware Sensors) with segmented activity pulse -->
+  <rect x="138" y="189" width="140" height="26" rx="13" fill="url(#markBarMidGrad)" />
+  <circle cx="316" cy="202" r="13" fill="#34D399" filter="url(#neonGlow)" />
+
+  <!-- Bottom Bar (Memory / Storage Metric) -->
+  <rect x="138" y="252" width="180" height="26" rx="13" fill="url(#markBarBotGrad)" />
+
+  <!-- Live telemetry dot on top right corner of monitor -->
+  <circle cx="388" cy="116" r="16" fill="url(#liveDotGlow)" />
+  <circle cx="388" cy="116" r="7" fill="#34D399" />
+</svg>
