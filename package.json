@@ -50,6 +50,7 @@
       "node_modules/osx-temperature-sensor/**"
     ],
     "win": {
+      "icon": "assets/branding/easydesk.ico",
       "target": "nsis",
       "extraResources": [
         {
@@ -66,6 +67,11 @@
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "allowElevation": true,
+      "installerHeader": "assets/branding/installer-header.bmp",
+      "installerIcon": "assets/branding/easydesk.ico",
+      "installerSidebar": "assets/branding/installer-sidebar.bmp",
+      "uninstallerIcon": "assets/branding/easydesk.ico",
+      "uninstallerSidebar": "assets/branding/installer-sidebar.bmp",
       "include": "build/installer.nsh"
     },
     "mac": {
