@@ -1,7 +1,111 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
-  <rect x="40" y="40" width="944" height="944" rx="210" fill="#dcebe4"/>
-  <path d="M300 190h424v92H402v104h286v88H402v108h322v92H300z" fill="#176b5b"/>
-  <rect x="154" y="676" width="716" height="76" rx="22" fill="#b86d3f"/>
-  <path d="M224 748h90v142h-90zm486 0h90v142h-90z" fill="#75462f"/>
-  <path d="M166 890h692v42H166z" fill="#75462f"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" fill="none">
+  <defs>
+    <!-- Background squircle gradients -->
+    <linearGradient id="iconBgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E1B4B" />
+      <stop offset="45%" stop-color="#0F172A" />
+      <stop offset="100%" stop-color="#030712" />
+    </linearGradient>
+
+    <!-- Inner rim border highlight -->
+    <linearGradient id="rimGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#818CF8" stop-opacity="0.45" />
+      <stop offset="50%" stop-color="#4F46E5" stop-opacity="0.15" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.05" />
+    </linearGradient>
+
+    <!-- Radial backlight glow -->
+    <radialGradient id="centerGlow" cx="50%" cy="45%" r="45%">
+      <stop offset="0%" stop-color="#6366F1" stop-opacity="0.32" />
+      <stop offset="60%" stop-color="#4F46E5" stop-opacity="0.1" />
+      <stop offset="100%" stop-color="#0F172A" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Mark Gradients -->
+    <linearGradient id="frameGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#A5B4FC" />
+      <stop offset="40%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#4338CA" />
+    </linearGradient>
+
+    <linearGradient id="barTopGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#818CF8" />
+      <stop offset="100%" stop-color="#C084FC" />
+    </linearGradient>
+
+    <linearGradient id="barMidGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38BDF8" />
+      <stop offset="100%" stop-color="#34D399" />
+    </linearGradient>
+
+    <linearGradient id="barBotGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#4F46E5" />
+      <stop offset="100%" stop-color="#6366F1" />
+    </linearGradient>
+
+    <linearGradient id="deskGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#312E81" />
+      <stop offset="50%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#818CF8" />
+    </linearGradient>
+
+    <!-- Glow & Shadow Filters -->
+    <filter id="markShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="24" flood-color="#4F46E5" flood-opacity="0.4" />
+    </filter>
+
+    <filter id="emeraldGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="14" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+
+    <radialGradient id="liveHalo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#34D399" stop-opacity="0.9" />
+      <stop offset="60%" stop-color="#34D399" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#34D399" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Squircle Canvas with Inner Glass Stroke -->
+  <rect x="64" y="64" width="896" height="896" rx="224" fill="url(#iconBgGrad)" />
+  <rect x="64" y="64" width="896" height="896" rx="224" fill="url(#centerGlow)" />
+  <rect x="66" y="66" width="892" height="892" rx="222" stroke="url(#rimGrad)" stroke-width="4" />
+
+  <!-- Subtle Horizon Grid lines (Telemetry context) -->
+  <g opacity="0.08" stroke="#FFFFFF" stroke-width="2">
+    <line x1="160" y1="280" x2="864" y2="280" stroke-dasharray="8 12" />
+    <line x1="160" y1="420" x2="864" y2="420" stroke-dasharray="8 12" />
+    <line x1="160" y1="560" x2="864" y2="560" stroke-dasharray="8 12" />
+    <line x1="160" y1="700" x2="864" y2="700" stroke-dasharray="8 12" />
+  </g>
+
+  <!-- The Emblem Assembly with Shadow -->
+  <g filter="url(#markShadow)">
+    <!-- Monitor Outer Bezel -->
+    <rect x="180" y="160" width="664" height="496" rx="80" stroke="url(#frameGrad)" stroke-width="36" stroke-linecap="round" fill="none" />
+
+    <!-- Monitor Stand Stem -->
+    <path d="M474 656 L452 770 H572 L550 656 Z" fill="url(#frameGrad)" opacity="0.95" />
+
+    <!-- Workstation Desk Base -->
+    <rect x="320" y="770" width="384" height="48" rx="24" fill="url(#deskGrad)" />
+
+    <!-- Stylized 'E' Telemetry Structure inside monitor -->
+    <!-- Left Spine of 'E' -->
+    <rect x="296" y="270" width="48" height="276" rx="24" fill="url(#frameGrad)" />
+
+    <!-- Top Bar (Telemetry CPU meter) -->
+    <rect x="296" y="270" width="370" height="48" rx="24" fill="url(#barTopGrad)" />
+
+    <!-- Mid Bar (Live Sensor Pulse & Node) -->
+    <rect x="296" y="384" width="250" height="48" rx="24" fill="url(#barMidGrad)" />
+    <circle cx="616" cy="408" r="24" fill="#34D399" filter="url(#emeraldGlow)" />
+
+    <!-- Bottom Bar (Memory / Storage metric) -->
+    <rect x="296" y="498" width="310" height="48" rx="24" fill="url(#barBotGrad)" />
+
+    <!-- Live Telemetry Status Node (top right corner of screen) -->
+    <circle cx="754" cy="248" r="32" fill="url(#liveHalo)" />
+    <circle cx="754" cy="248" r="14" fill="#34D399" />
+  </g>
 </svg>

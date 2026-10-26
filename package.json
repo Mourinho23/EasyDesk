@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "desktop": "electron .",
-    "predist:win": "dotnet publish sensor-service\\EasyDesk.SensorService.csproj --configuration Release --output sensor-service\\publish",
+    "predist:win": "dotnet publish sensor-service\\EasyDesk.SensorService.csproj --configuration Release --output sensor-service\\publish && node scripts\\prepare-node-installer.js",
     "dist:win": "electron-builder --win nsis",
     "dist:mac": "electron-builder --mac dmg",
     "dist:linux": "electron-builder --linux AppImage",
@@ -58,6 +58,13 @@
           "to": "sensor-service",
           "filter": [
             "**/*"
+          ]
+        },
+        {
+          "from": "build/node-installer",
+          "to": "node-installer",
+          "filter": [
+            "Node.js-Setup-x64.msi"
           ]
         }
       ],

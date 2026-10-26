@@ -71,7 +71,10 @@ async function criarJanela() {
     minWidth: 800,
     minHeight: 600,
     show: false,
-    icon: path.join(__dirname, process.platform === "win32" ? "Interface/easydesk.ico" : "Interface/easydesk-icon.png"),
+    icon: path.join(
+      __dirname,
+      process.platform === "win32" ? "Interface/easydesk.ico" : "Interface/easydesk-icon.png"
+    ),
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,

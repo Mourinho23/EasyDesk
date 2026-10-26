@@ -5,3 +5,4 @@ dist/
 sensor-service/bin/
 sensor-service/obj/
 sensor-service/publish/
+build/node-installer/

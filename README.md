@@ -1,3 +1,11 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/branding/EasyDesk-logo-horizontal-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="assets/branding/EasyDesk-logo-horizontal.svg">
+    <img alt="EasyDesk Logo" src="assets/branding/EasyDesk-logo-horizontal.svg" width="460">
+  </picture>
+</p>
+
 # EasyDesk
 
 Aplicação de ambiente de trabalho e painel web para consultar informações sobre o computador onde o EasyDesk está a correr.
@@ -27,7 +35,7 @@ O site obtém os links da API pública de versões do GitHub. Para publicar atua
 
 Descarrega o instalador adequado no site EasyDesk:
 
-- **Windows:** executa o instalador `.exe` e segue as instruções. Não é necessário instalar Node.js.
+- **Windows:** executa o instalador `.exe` e segue as instruções. Podes autorizar opcionalmente a instalação automática do Node.js 24 LTS. O MSI é executado em segundo plano, sem terminal ou assistente adicional; o Windows pode pedir confirmação de administrador. O EasyDesk não precisa do Node.js para funcionar.
 - **macOS:** escolhe Apple Silicon ou Intel, abre o `.dmg` e arrasta EasyDesk para **Aplicações**. As versões ainda não estão assinadas nem notarizadas; o macOS poderá apresentar avisos de segurança.
 - **Linux:** usa o AppImage, `.deb` (Debian, Ubuntu e derivados) ou `.rpm` (Fedora, openSUSE e derivados). Algumas distribuições podem exigir FUSE para executar AppImages.
 
@@ -57,7 +65,7 @@ No Windows, também podes abrir o atalho de desenvolvimento `Iniciar EasyDesk.ln
 
 ## Criar instaladores
 
-Instala Node.js 22.12 ou superior e executa os comandos a partir da pasta do projeto. Para compilar o auxiliar opcional de sensores do Windows, instala também o .NET SDK 8. Cria cada instalador no respetivo sistema operativo:
+Instala Node.js 22.12 ou superior e executa os comandos a partir da pasta do projeto. Para compilar o auxiliar opcional de sensores do Windows, instala também o .NET SDK 8. A criação do instalador Windows descarrega a versão LTS 24 mais recente do MSI oficial do Node.js e verifica o respetivo SHA-256 antes de a incluir. Cria cada instalador no respetivo sistema operativo:
 
 | Sistema onde estás a compilar | Comando | Ficheiro gerado |
 | --- | --- | --- |
@@ -65,7 +73,7 @@ Instala Node.js 22.12 ou superior e executa os comandos a partir da pasta do pro
 | macOS | `npm run dist:mac` | Imagem `.dmg` |
 | Linux | `npm run dist:linux` | `.AppImage`, `.deb` e `.rpm` (x64) |
 
-Primeiro instala as dependências:
+Primeiro instala as dependências. Para o instalador Windows, é necessária uma ligação à Internet para obter o MSI do Node.js:
 
 ```sh
 npm ci
