@@ -7,10 +7,13 @@ Var EasyDeskSensorChoice
 Var EasyDeskSensorNone
 Var EasyDeskSensorWith
 Var EasyDeskSensorPage
+Var EasyDeskNodeChoice
+Var EasyDeskNodeCheckbox
 !endif
 
 !macro customInit
   StrCpy $EasyDeskSensorChoice "1"
+  StrCpy $EasyDeskNodeChoice "0"
   ReadRegDWORD $0 HKCU "Software\EasyDesk\Installer" "InstallSensors"
   ${If} $0 == 0
     StrCpy $EasyDeskSensorChoice "0"
@@ -36,7 +39,7 @@ Var EasyDeskSensorPage
 
 !ifndef BUILD_UNINSTALLER
 Function EasyDeskSensorPageCreate
-  !insertmacro MUI_HEADER_TEXT "Sensores de hardware" "Escolhe se queres incluir os sensores de temperatura e energia."
+  !insertmacro MUI_HEADER_TEXT "Opções de instalação" "Escolhe se queres incluir componentes opcionais."
   nsDialogs::Create 1018
   Pop $EasyDeskSensorPage
   ${If} $EasyDeskSensorPage == error
@@ -54,10 +57,22 @@ Function EasyDeskSensorPageCreate
     ${NSD_Check} $EasyDeskSensorNone
   ${EndIf}
 
+  ${NSD_CreateCheckbox} 0 86u 100% 24u "Autorizo o EasyDesk a instalar o Node.js 24 LTS (opcional)"
+  Pop $EasyDeskNodeCheckbox
+  ${NSD_CreateLabel} 18u 108u 92% 34u "Se autorizares, o EasyDesk instala o Node.js em segundo plano. O Windows pode pedir confirmação de administrador. Não precisas de abrir o terminal nem outro assistente."
+  Pop $0
+
   nsDialogs::Show
 FunctionEnd
 
 Function EasyDeskSensorPageLeave
+  ${NSD_GetState} $EasyDeskNodeCheckbox $0
+  ${If} $0 == ${BST_CHECKED}
+    StrCpy $EasyDeskNodeChoice "1"
+  ${Else}
+    StrCpy $EasyDeskNodeChoice "0"
+  ${EndIf}
+
   ${NSD_GetState} $EasyDeskSensorWith $0
   ${If} $0 == ${BST_CHECKED}
     SetRegView 64
@@ -105,6 +120,36 @@ FunctionEnd
     Delete "$INSTDIR\resources\sensor-service.enabled"
     RMDir /r "$INSTDIR\resources\sensor-service"
   ${EndIf}
+
+  ${If} $EasyDeskNodeChoice == "1"
+    IfFileExists "$PROGRAMFILES64\nodejs\node.exe" easyDeskNodeAlreadyInstalled
+    IfFileExists "$PROGRAMFILES\nodejs\node.exe" easyDeskNodeAlreadyInstalled
+    IfFileExists "$LOCALAPPDATA\Programs\nodejs\node.exe" easyDeskNodeAlreadyInstalled
+
+    IfFileExists "$INSTDIR\resources\node-installer\Node.js-Setup-x64.msi" +2 0
+      Abort "O instalador do Node.js não está disponível. A instalação do EasyDesk foi interrompida."
+
+    ExecShellWait "runas" "$SYSDIR\msiexec.exe" '/i "$INSTDIR\resources\node-installer\Node.js-Setup-x64.msi" /qn /norestart REBOOT=ReallySuppress' SW_HIDE $0
+    IfErrors easyDeskNodeElevationCancelled
+    ${If} $0 == 3010
+      MessageBox MB_ICONINFORMATION "O Node.js foi instalado. O Windows pode pedir que reinicies o computador para concluir a configuração."
+    ${ElseIf} $0 == 1602
+      MessageBox MB_ICONINFORMATION "A instalação do Node.js foi cancelada. O EasyDesk foi instalado normalmente."
+    ${ElseIf} $0 != 0
+      MessageBox MB_ICONEXCLAMATION "Não foi possível instalar o Node.js (código $0). O EasyDesk foi instalado; podes voltar a executar o instalador e tentar novamente."
+    ${EndIf}
+    Goto easyDeskNodeInstallFinished
+
+    easyDeskNodeElevationCancelled:
+      MessageBox MB_ICONINFORMATION "A autorização do Windows para instalar o Node.js foi cancelada. O EasyDesk foi instalado normalmente."
+      Goto easyDeskNodeInstallFinished
+    easyDeskNodeAlreadyInstalled:
+      MessageBox MB_ICONINFORMATION "O Node.js já está instalado. Não foi necessário instalá-lo novamente."
+    easyDeskNodeInstallFinished:
+  ${EndIf}
+
+  Delete "$INSTDIR\resources\node-installer\Node.js-Setup-x64.msi"
+  RMDir "$INSTDIR\resources\node-installer"
 !macroend
 
 !macro customUnInstall
