@@ -13,10 +13,7 @@
     "test": "node --test"
   },
   "keywords": [],
-  "author": {
-    "name": "Mourinho23",
-    "email": "332061145+Mourinho23@users.noreply.github.com"
-  },
+  "author": "",
   "license": "MIT",
   "type": "commonjs",
   "engines": {
