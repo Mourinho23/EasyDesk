@@ -67,6 +67,15 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run ${{ matrix.command }} -- --publish never ${{ matrix.extra_args }}
+      - name: Verify Linux packages
+        if: matrix.platform == 'Linux'
+        run: |
+          for extension in AppImage deb rpm; do
+            if ! find release -maxdepth 1 -type f -iname "*.${extension}" -print -quit | grep -q .; then
+              echo "Missing Linux package: .${extension}"
+              exit 1
+            fi
+          done
       - uses: actions/upload-artifact@v4
         with:
           name: installers-${{ matrix.artifact }}
