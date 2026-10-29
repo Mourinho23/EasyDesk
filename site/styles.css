@@ -90,6 +90,7 @@ h1 span, .section-heading h2 span, .sensor-copy h2 span { color: var(--purple); 
 .download-card.recommended-platform { border-color: #b9acf9; box-shadow: 0 0 0 2px rgba(117,87,239,.1), 0 8px 24px rgba(29,36,59,.05); }
 .platform-heading { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
 .platform-icon { width: 40px; height: 40px; display: grid; flex: 0 0 auto; place-items: center; border-radius: 11px; font-size: 1.5rem; font-weight: 700; }
+.platform-logo { display: block; width: 32px; height: 32px; object-fit: contain; }
 .windows-icon { color: #168bd2; background: #eaf6fc; }
 .mac-icon { color: #373b48; background: #eef0f5; }
 .linux-icon { color: #d68e15; background: #fff4de; }
