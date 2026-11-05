@@ -9,7 +9,7 @@
     "predist:win": "dotnet publish sensor-service\\EasyDesk.SensorService.csproj --configuration Release --output sensor-service\\publish && node scripts\\prepare-node-installer.js",
     "dist:win": "electron-builder --win nsis",
     "dist:mac": "electron-builder --mac dmg",
-    "dist:linux": "electron-builder --linux AppImage",
+    "dist:linux": "electron-builder --linux",
     "test": "node --test"
   },
   "keywords": [],
