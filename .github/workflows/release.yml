@@ -60,16 +60,21 @@ jobs:
         if: matrix.platform == 'Windows'
         with:
           dotnet-version: 8.0.x
-      - name: Configure Windows code signing
+      - name: Configure Windows code signing when available
         if: matrix.platform == 'Windows'
         shell: pwsh
         env:
           WINDOWS_SIGNING_CERTIFICATE_BASE64: ${{ secrets.WINDOWS_SIGNING_CERTIFICATE_BASE64 }}
           WINDOWS_SIGNING_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_SIGNING_CERTIFICATE_PASSWORD }}
         run: |
-          if ([string]::IsNullOrWhiteSpace($env:WINDOWS_SIGNING_CERTIFICATE_BASE64) -or
-              [string]::IsNullOrWhiteSpace($env:WINDOWS_SIGNING_CERTIFICATE_PASSWORD)) {
-            throw "Configure WINDOWS_SIGNING_CERTIFICATE_BASE64 and WINDOWS_SIGNING_CERTIFICATE_PASSWORD as repository Actions secrets."
+          $hasCertificate = -not [string]::IsNullOrWhiteSpace($env:WINDOWS_SIGNING_CERTIFICATE_BASE64)
+          $hasPassword = -not [string]::IsNullOrWhiteSpace($env:WINDOWS_SIGNING_CERTIFICATE_PASSWORD)
+          if ($hasCertificate -ne $hasPassword) {
+            throw "Configure both Windows signing secrets, or remove both to build an unsigned installer."
+          }
+          if (-not $hasCertificate) {
+            Write-Warning "Building an unsigned Windows installer; SmartScreen warnings may appear."
+            exit 0
           }
           $certificatePath = Join-Path $env:RUNNER_TEMP "easydesk-signing.pfx"
           $certificateBytes = [Convert]::FromBase64String($env:WINDOWS_SIGNING_CERTIFICATE_BASE64)
@@ -86,9 +91,15 @@ jobs:
       - name: Verify Windows installer signature
         if: matrix.platform == 'Windows'
         shell: pwsh
+        env:
+          WINDOWS_SIGNING_CERTIFICATE_BASE64: ${{ secrets.WINDOWS_SIGNING_CERTIFICATE_BASE64 }}
         run: |
           $installer = Get-ChildItem "release/EasyDesk-Setup-*.exe" | Select-Object -First 1
           if ($null -eq $installer) { throw "Windows installer not found." }
+          if ([string]::IsNullOrWhiteSpace($env:WINDOWS_SIGNING_CERTIFICATE_BASE64)) {
+            Write-Warning "The Windows installer is unsigned."
+            exit 0
+          }
           $signature = Get-AuthenticodeSignature $installer.FullName
           if ($signature.Status -ne "Valid") {
             throw "Windows installer signature is not valid: $($signature.Status)"

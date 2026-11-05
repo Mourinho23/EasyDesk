@@ -73,7 +73,7 @@ Primeiro instala as dependências. Para o instalador Windows, é necessária uma
 npm ci
 ```
 
-As releases Windows são assinadas com Authenticode. Configura os secrets `WINDOWS_SIGNING_CERTIFICATE_BASE64` (certificado PFX codificado em Base64) e `WINDOWS_SIGNING_CERTIFICATE_PASSWORD` nas definições Actions do repositório. O workflow falha em vez de publicar um instalador Windows sem assinatura. A assinatura identifica o editor; a reputação SmartScreen e os falsos positivos de antivírus também dependem dos fornecedores e não podem ser garantidos apenas pelo código.
+As releases Windows são assinadas com Authenticode quando os secrets `WINDOWS_SIGNING_CERTIFICATE_BASE64` (certificado PFX codificado em Base64) e `WINDOWS_SIGNING_CERTIFICATE_PASSWORD` estão configurados. Sem esses secrets, o workflow publica um instalador sem assinatura e o SmartScreen poderá apresentar avisos. A assinatura identifica o editor, mas a reputação SmartScreen e os falsos positivos de antivírus dependem também dos fornecedores.
 
 Depois executa **apenas o comando correspondente ao sistema onde estás a compilar**. Os ficheiros finais são colocados em `release/`. A compilação macOS pode necessitar das ferramentas de linha de comandos da Apple. O workflow `release.yml` compila automaticamente em Windows, macOS e Linux quando é enviada uma etiqueta de versão válida.
 
