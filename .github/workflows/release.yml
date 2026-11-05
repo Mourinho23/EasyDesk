@@ -60,6 +60,22 @@ jobs:
         if: matrix.platform == 'Windows'
         with:
           dotnet-version: 8.0.x
+      - name: Configure Windows code signing
+        if: matrix.platform == 'Windows'
+        shell: pwsh
+        env:
+          WINDOWS_SIGNING_CERTIFICATE_BASE64: ${{ secrets.WINDOWS_SIGNING_CERTIFICATE_BASE64 }}
+          WINDOWS_SIGNING_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_SIGNING_CERTIFICATE_PASSWORD }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:WINDOWS_SIGNING_CERTIFICATE_BASE64) -or
+              [string]::IsNullOrWhiteSpace($env:WINDOWS_SIGNING_CERTIFICATE_PASSWORD)) {
+            throw "Configure WINDOWS_SIGNING_CERTIFICATE_BASE64 and WINDOWS_SIGNING_CERTIFICATE_PASSWORD as repository Actions secrets."
+          }
+          $certificatePath = Join-Path $env:RUNNER_TEMP "easydesk-signing.pfx"
+          $certificateBytes = [Convert]::FromBase64String($env:WINDOWS_SIGNING_CERTIFICATE_BASE64)
+          [IO.File]::WriteAllBytes($certificatePath, $certificateBytes)
+          "CSC_LINK=$certificatePath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "CSC_KEY_PASSWORD=$env:WINDOWS_SIGNING_CERTIFICATE_PASSWORD" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       - name: Verify release tag matches package version
         env:
           RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}
@@ -67,6 +83,16 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run ${{ matrix.command }} -- --publish never ${{ matrix.extra_args }}
+      - name: Verify Windows installer signature
+        if: matrix.platform == 'Windows'
+        shell: pwsh
+        run: |
+          $installer = Get-ChildItem "release/EasyDesk-Setup-*.exe" | Select-Object -First 1
+          if ($null -eq $installer) { throw "Windows installer not found." }
+          $signature = Get-AuthenticodeSignature $installer.FullName
+          if ($signature.Status -ne "Valid") {
+            throw "Windows installer signature is not valid: $($signature.Status)"
+          }
       - uses: actions/upload-artifact@v4
         with:
           name: installers-${{ matrix.artifact }}

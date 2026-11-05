@@ -53,6 +53,84 @@ header p {
   color: var(--muted);
 }
 
+.tab-navigation {
+  display: flex;
+  width: fit-content;
+  gap: 4px;
+  margin: 20px 0 18px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #eef1f4;
+}
+
+.tab-button {
+  min-width: 120px;
+  border: 0;
+  border-radius: 5px;
+  padding: 9px 14px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tab-button[aria-selected="true"] {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 1px 2px rgba(16, 24, 40, .12);
+}
+
+.tab-button:focus-visible {
+  outline: 2px solid #175cd3;
+  outline-offset: 2px;
+}
+
+.tab-panel[hidden] {
+  display: none;
+}
+
+.qr-panel {
+  min-height: 360px;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 12px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  text-align: center;
+}
+
+.qr-panel h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.qr-image {
+  display: block;
+  width: 256px;
+  height: 256px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: #fff;
+}
+
+.qr-status {
+  min-height: 1.45em;
+  margin: 0;
+  color: var(--muted);
+}
+
+.qr-link {
+  max-width: min(100%, 560px);
+  color: #175cd3;
+  overflow-wrap: anywhere;
+  text-underline-offset: 2px;
+}
+
 .alerts {
   display: grid;
   gap: 10px;
@@ -346,6 +424,12 @@ header p {
   </div>
 </header>
 
+<nav class="tab-navigation" role="tablist" aria-label="Secções do EasyDesk">
+  <button class="tab-button" type="button" id="tab-principal" role="tab" aria-selected="true" aria-controls="pagina-principal" tabindex="0" data-tab="principal">Painel</button>
+  <button class="tab-button" type="button" id="tab-acesso" role="tab" aria-selected="false" aria-controls="pagina-acesso" tabindex="-1" data-tab="acesso">QR Code</button>
+</nav>
+
+<section id="pagina-principal" class="tab-panel" role="tabpanel" aria-labelledby="tab-principal" tabindex="0">
 <section class="alerts" id="alertas" aria-label="Alertas do sistema"></section>
 
 <section class="grid">
@@ -440,11 +524,23 @@ header p {
 </section>
 
 <button class="refresh" type="button" onclick="location.reload()">Atualizar</button>
+</section>
+
+<section id="pagina-acesso" class="tab-panel" role="tabpanel" aria-labelledby="tab-acesso" tabindex="0" hidden>
+  <div class="qr-panel">
+    <h2>Acesso ao painel</h2>
+    <img id="qr-image" class="qr-image" alt="Código QR para abrir o painel principal" hidden>
+    <p id="qr-status" class="qr-status" role="status" aria-live="polite"></p>
+    <a id="qr-link" class="qr-link" hidden></a>
+  </div>
+</section>
 </main>
 
 <script>
   const naoEncontrado = "Não encontrado";
   let eventosAtivos;
+  let codigoQrCarregado = false;
+  let codigoQrEmCarregamento = false;
 
   const texto = valor =>
     valor === null || valor === undefined || valor === ""
@@ -860,6 +956,88 @@ header p {
     };
   }
 
+  async function carregarCodigoQr() {
+    if (codigoQrCarregado || codigoQrEmCarregamento) return;
+
+    codigoQrEmCarregamento = true;
+    const estado = document.getElementById("qr-status");
+    const imagem = document.getElementById("qr-image");
+    const link = document.getElementById("qr-link");
+    estado.textContent = "A gerar código QR...";
+
+    try {
+      const resposta = await fetch("/api/qr");
+      const codigo = await resposta.json();
+      if (!resposta.ok) {
+        estado.textContent = codigo.erro || "Não foi possível gerar o código QR.";
+        return;
+      }
+
+      imagem.src = codigo.dataUrl;
+      imagem.hidden = false;
+      link.href = codigo.url;
+      link.textContent = codigo.url;
+      link.hidden = false;
+      estado.textContent = "";
+      codigoQrCarregado = true;
+    } catch {
+      imagem.hidden = true;
+      link.hidden = true;
+      estado.textContent = "Não foi possível gerar o código QR.";
+    } finally {
+      codigoQrEmCarregamento = false;
+    }
+  }
+
+  function mostrarAba(aba) {
+    const mostrarAcesso = aba === "acesso";
+    const botaoPrincipal = document.getElementById("tab-principal");
+    const botaoAcesso = document.getElementById("tab-acesso");
+
+    botaoPrincipal.setAttribute("aria-selected", String(!mostrarAcesso));
+    botaoPrincipal.tabIndex = mostrarAcesso ? -1 : 0;
+    botaoAcesso.setAttribute("aria-selected", String(mostrarAcesso));
+    botaoAcesso.tabIndex = mostrarAcesso ? 0 : -1;
+    document.getElementById("pagina-principal").hidden = mostrarAcesso;
+    document.getElementById("pagina-acesso").hidden = !mostrarAcesso;
+
+    if (mostrarAcesso) carregarCodigoQr();
+  }
+
+  function selecionarAba(aba) {
+    const hash = aba === "acesso" ? "#acesso" : "#principal";
+    if (window.location.hash === hash) {
+      mostrarAba(aba);
+    } else {
+      window.location.hash = hash;
+    }
+  }
+
+  const abas = Array.from(document.querySelectorAll('[role="tab"]'));
+  abas.forEach((aba, indice) => {
+    aba.addEventListener("click", () => selecionarAba(aba.dataset.tab));
+    aba.addEventListener("keydown", evento => {
+      let proximoIndice;
+      if (evento.key === "ArrowRight") proximoIndice = (indice + 1) % abas.length;
+      if (evento.key === "ArrowLeft") proximoIndice = (indice - 1 + abas.length) % abas.length;
+      if (evento.key === "Home") proximoIndice = 0;
+      if (evento.key === "End") proximoIndice = abas.length - 1;
+
+      if (proximoIndice !== undefined) {
+        evento.preventDefault();
+        abas[proximoIndice].focus();
+        selecionarAba(abas[proximoIndice].dataset.tab);
+      }
+    });
+  });
+
+  window.addEventListener("hashchange", () => {
+    mostrarAba(window.location.hash === "#acesso" ? "acesso" : "principal");
+  });
+
+  const abaInicial = window.location.hash === "#acesso" ? "acesso" : "principal";
+  mostrarAba(abaInicial);
+  carregarCodigoQr();
   iniciarAtualizacaoAoVivo();
 </script>
 </body>

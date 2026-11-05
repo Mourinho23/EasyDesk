@@ -3,6 +3,7 @@ const cors = require("cors");
 const os = require("os");
 const path = require("path");
 const si = require("systeminformation");
+const QRCode = require("qrcode");
 const { readSensorData } = require("./sensor-data");
 
 const app = express();
@@ -13,6 +14,13 @@ app.use(express.static(path.join(__dirname, "Interface")));
 
 let clientes = [];
 let ultimoErroSensores = null;
+let servidor;
+let servidorRede;
+let urlPainelRede;
+let resolverUrlPainelRede;
+const urlPainelRedePronta = new Promise(resolve => {
+  resolverUrlPainelRede = resolve;
+});
 
 function arredondar(valor, casas = 1) {
   if (valor === undefined || valor === null || Number.isNaN(valor)) {
@@ -20,6 +28,15 @@ function arredondar(valor, casas = 1) {
   }
 
   return Number(Number(valor).toFixed(casas));
+}
+
+function obterUrlPainelRede() {
+  return urlPainelRede ? Promise.resolve(urlPainelRede) : urlPainelRedePronta;
+}
+
+function definirUrlPainelRede(url) {
+  urlPainelRede = url;
+  resolverUrlPainelRede(url);
 }
 
 async function recolherDados() {
@@ -246,6 +263,30 @@ app.get("/api/info", async (req, res) => {
   }
 });
 
+app.get("/api/qr", async (req, res) => {
+  const enderecoRede = await obterUrlPainelRede();
+  if (!enderecoRede) {
+    return res.status(503).json({
+      erro: "Não foi detetado um endereço de rede local"
+    });
+  }
+
+  const url = `${enderecoRede}/#principal`;
+
+  try {
+    const dataUrl = await QRCode.toDataURL(url, {
+      errorCorrectionLevel: "M",
+      margin: 2,
+      width: 256
+    });
+
+    res.setHeader("Cache-Control", "no-store");
+    res.json({ url, dataUrl });
+  } catch (erro) {
+    res.status(500).json({ erro: "Não foi possível gerar o código QR" });
+  }
+});
+
 app.get("/events", async (req, res) => {
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
@@ -276,22 +317,68 @@ app.get("/events", async (req, res) => {
   });
 });
 
-const interfacesRede = Object.values(os.networkInterfaces()).flat();
-const interfaceLocal = interfacesRede.find(interfaceRede => {
-  if (!interfaceRede || interfaceRede.family !== "IPv4" || interfaceRede.internal) {
-    return false;
+async function iniciarServidorRede(porta) {
+  let nomeInterfacePadrao;
+  try {
+    nomeInterfacePadrao = await si.networkInterfaceDefault();
+  } catch {
+    nomeInterfacePadrao = null;
   }
 
-  const octetos = interfaceRede.address.split(".").map(Number);
+  const interfacesRede = Object.entries(os.networkInterfaces()).flatMap(([nome, interfaces]) =>
+    (interfaces || []).map(interfaceRede => ({ ...interfaceRede, nomeInterface: nome }))
+  );
+  const interfacesOrdenadas = nomeInterfacePadrao
+    ? [
+      ...interfacesRede.filter(interfaceRede => interfaceRede.nomeInterface === nomeInterfacePadrao),
+      ...interfacesRede.filter(interfaceRede => interfaceRede.nomeInterface !== nomeInterfacePadrao)
+    ]
+    : interfacesRede;
+  const interfaceLocalIPv4 = interfacesOrdenadas.find(interfaceRede => {
+    if (!interfaceRede || interfaceRede.family !== "IPv4" || interfaceRede.internal) {
+      return false;
+    }
 
-  return octetos[0] === 10 ||
-    (octetos[0] === 172 && octetos[1] >= 16 && octetos[1] <= 31) ||
-    (octetos[0] === 192 && octetos[1] === 168);
-});
-const enderecoLocal = interfaceLocal?.address || "127.0.0.1";
+    const octetos = interfaceRede.address.split(".").map(Number);
 
-const servidor = app.listen(PORT, enderecoLocal, () => {
-  console.log(`Painel disponível em http://${enderecoLocal}:${PORT}`);
+    return octetos[0] === 10 ||
+      (octetos[0] === 172 && octetos[1] >= 16 && octetos[1] <= 31) ||
+      (octetos[0] === 192 && octetos[1] === 168);
+  });
+  const interfaceLocalIPv6 = interfacesOrdenadas.find(interfaceRede =>
+    interfaceRede &&
+    interfaceRede.family === "IPv6" &&
+    !interfaceRede.internal &&
+    /^fe[89ab][0-9a-f]:/i.test(interfaceRede.address)
+  );
+
+  if (!interfaceLocalIPv4 && !interfaceLocalIPv6) {
+    return;
+  }
+
+  const enderecoEscopado = interfaceLocalIPv4
+    ? interfaceLocalIPv4.address
+    : `${interfaceLocalIPv6.address}%${process.platform === "win32" && interfaceLocalIPv6.scopeid
+      ? interfaceLocalIPv6.scopeid
+      : interfaceLocalIPv6.nomeInterface}`;
+
+  servidorRede = app.listen(porta, enderecoEscopado);
+  servidor.lanServer = servidorRede;
+  servidorRede.once("listening", () => {
+    console.log(`Acesso pela rede local: ${urlPainelRede}`);
+  });
+  servidorRede.once("error", erro => {
+    console.error("Não foi possível iniciar o acesso pela rede local:", erro.message);
+  });
+}
+
+servidor = app.listen(PORT, "127.0.0.1", () => {
+  const endereco = servidor.address();
+  const urlLocal = `http://${endereco.address}:${endereco.port}`;
+  console.log(`Painel disponível em ${urlLocal}`);
+  const nomeComputador = os.hostname().replace(/\.local$/i, "");
+  definirUrlPainelRede(`http://${nomeComputador}.local:${endereco.port}`);
+  iniciarServidorRede(endereco.port);
 });
 
 module.exports = servidor;

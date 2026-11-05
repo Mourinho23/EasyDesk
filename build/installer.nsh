@@ -12,7 +12,7 @@ Var EasyDeskNodeCheckbox
 !endif
 
 !macro customInit
-  StrCpy $EasyDeskSensorChoice "1"
+  StrCpy $EasyDeskSensorChoice "0"
   StrCpy $EasyDeskNodeChoice "0"
   ReadRegDWORD $0 HKCU "Software\EasyDesk\Installer" "InstallSensors"
   ${If} $0 == 0

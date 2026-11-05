@@ -10,6 +10,10 @@
 
 Aplicação de ambiente de trabalho e painel web para consultar informações sobre o computador onde o EasyDesk está a correr.
 
+<p align="center">
+  <img src="assets/branding/README-dashboard.png" alt="Painel principal do EasyDesk com dados de demonstração" width="100%">
+</p>
+
 ## Funcionalidades
 
 - Painel com dados de CPU, memória, armazenamento, discos, rede e sistema operativo.
@@ -19,17 +23,7 @@ Aplicação de ambiente de trabalho e painel web para consultar informações so
 
 ## Site de downloads
 
-O site estático está em [`site/`](site/). Deteta o sistema operativo, carrega os instaladores da última versão publicada e oferece AppImage, `.deb` e `.rpm` para Linux. Não precisa de um servidor de aplicação: pode ser alojado no GitHub Pages.
-
-Para o publicar:
-
-1. Envia o código atualizado para a branch `main` do repositório público. A página e os instaladores publicados serão públicos.
-2. [`site/config.js`](site/config.js) já está configurado para `Mourinho23/EasyDesk`. Se publicares o projeto noutro repositório, atualiza esse identificador.
-3. Nas definições do repositório, em **Pages**, seleciona **GitHub Actions** como origem de publicação.
-4. Envia a alteração à branch `main`. O workflow `pages.yml` publica o conteúdo de `site/`; o endereço aparece nas definições de Pages.
-5. Para gerar e publicar os instaladores, cria e envia uma etiqueta que corresponda à versão em `package.json`, por exemplo `v1.0.0`. O workflow `release.yml` compila cada sistema no respetivo runner e anexa os pacotes à versão GitHub.
-
-O site obtém os links da API pública de versões do GitHub. Para publicar atualizações, aumenta primeiro a versão em `package.json` e usa a etiqueta correspondente, por exemplo `v1.0.1`. O endereço previsto do site é [mourinho23.github.io/EasyDesk](https://mourinho23.github.io/EasyDesk/). O site e os instaladores ficam online depois de enviares estas alterações para a branch `main`, ativares **GitHub Actions** como origem de Pages e publicares uma versão com uma etiqueta correspondente à versão em `package.json`.
+[Transferir EasyDesk para Windows, macOS e Linux](https://mourinho23.github.io/EasyDesk/)
 
 ## Instalar e abrir
 
@@ -79,6 +73,8 @@ Primeiro instala as dependências. Para o instalador Windows, é necessária uma
 npm ci
 ```
 
+As releases Windows são assinadas com Authenticode. Configura os secrets `WINDOWS_SIGNING_CERTIFICATE_BASE64` (certificado PFX codificado em Base64) e `WINDOWS_SIGNING_CERTIFICATE_PASSWORD` nas definições Actions do repositório. O workflow falha em vez de publicar um instalador Windows sem assinatura. A assinatura identifica o editor; a reputação SmartScreen e os falsos positivos de antivírus também dependem dos fornecedores e não podem ser garantidos apenas pelo código.
+
 Depois executa **apenas o comando correspondente ao sistema onde estás a compilar**. Os ficheiros finais são colocados em `release/`. A compilação macOS pode necessitar das ferramentas de linha de comandos da Apple. O workflow `release.yml` compila automaticamente em Windows, macOS e Linux quando é enviada uma etiqueta de versão válida.
 
 ## Sensores e leituras
@@ -92,6 +88,8 @@ Os valores de potência total do sistema e de eficiência da fonte só aparecem 
 ## Acesso a partir da rede local
 
 O servidor mostra no arranque o endereço que podes abrir no próprio computador. Para acederes a partir de um telemóvel ou de outro computador, liga ambos à mesma rede e abre nesse dispositivo o endereço LAN indicado pelo servidor.
+
+O código QR é gerado localmente, sem depender da Internet, e usa o nome `.local` deste computador para continuar válido se o endereço IP mudar. O computador tem de estar ligado e acessível na rede local para o painel abrir; um NFC não consegue mostrar dados de um computador desligado ou sem rede.
 
 Cada computador executa a sua própria instância e apresenta apenas os dados da máquina que está a servir o painel. O EasyDesk não agrega várias máquinas num único painel. Se o servidor deixar de responder, o estado e os campos de armazenamento e utilizador passam a **Desligado**.
 

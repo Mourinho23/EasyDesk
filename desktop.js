@@ -140,4 +140,8 @@ app.on("before-quit", event => {
     server.close();
     server.closeAllConnections();
   }
+  if (server?.lanServer?.listening) {
+    server.lanServer.close();
+    server.lanServer.closeAllConnections();
+  }
 });
