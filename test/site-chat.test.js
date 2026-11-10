@@ -17,7 +17,9 @@ test("website chat runs a local AI model without requesting an API key", () => {
   assert.match(html, /href="\.\/tailwind\.css"/);
   assert.match(html, /IA a correr no teu navegador, sem chave/);
   assert.doesNotMatch(html, /chat-api-key|Gemini|chave da API/i);
-  assert.match(script, /onnx-community\/Qwen3-1\.7B-ONNX/);
+  assert.match(script, /webgpu:\s*"onnx-community\/Qwen3-1\.7B-ONNX"/);
+  assert.match(script, /wasm:\s*"onnx-community\/Qwen3-0\.6B-ONNX"/);
+  assert.match(script, /modelIds\[device\]/);
   assert.match(script, /temperature: 0\.7/);
   assert.match(script, /top_p: 0\.8/);
   assert.match(script, /@huggingface\/transformers/);

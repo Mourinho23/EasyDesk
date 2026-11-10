@@ -11,7 +11,10 @@
   const errorElement = document.getElementById("chat-error");
   const modeStatus = document.getElementById("chat-mode-status");
   const welcomeText = "Olá! Sou o EasyDesk AI. Escreve a tua pergunta — não precisas de chave nem de conta.";
-  const modelId = "onnx-community/Qwen3-1.7B-ONNX";
+  const modelIds = {
+    webgpu: "onnx-community/Qwen3-1.7B-ONNX",
+    wasm: "onnx-community/Qwen3-0.6B-ONNX"
+  };
   const transformersUrl = "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.7.2";
 
   let generatorPromise;
@@ -63,7 +66,7 @@
       progress_callback: onProgress
     };
     if (device === "webgpu") options.device = "webgpu";
-    return pipeline("text-generation", modelId, options);
+    return pipeline("text-generation", modelIds[device], options);
   }
 
   async function getGenerator(onProgress, requestId) {
@@ -80,17 +83,17 @@
         }
 
         const device = adapter ? "webgpu" : "wasm";
-        setStatus(adapter ? "IA local · modo gráfico" : "IA local · modo compatível");
+        setStatus(adapter ? "IA local · modo gráfico" : "IA local · modelo compatível");
         try {
           return await createGenerator(device, onProgress);
         } catch (error) {
           if (!adapter || !/webgpu|gpu|adapter|device|execution provider/i.test(error.message)) {
             throw error;
           }
-          setStatus("A tentar modo compatível...");
+          setStatus("A mudar para modelo compatível...");
           if (requestId === activeRequest) {
             const pending = messagesElement.querySelector(".chat-message.pending");
-            if (pending) pending.textContent = "A preparar a IA para este dispositivo...";
+            if (pending) pending.textContent = "A preparar um modelo mais leve para este dispositivo...";
           }
           return createGenerator("wasm", onProgress);
         }
