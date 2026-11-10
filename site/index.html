@@ -8,9 +8,11 @@
   <link rel="apple-touch-icon" href="./easydesk-icon.png">
   <meta name="description" content="Descarrega o EasyDesk para Windows, macOS ou Linux e consulta os recursos do teu computador num painel simples.">
   <title>EasyDesk — Monitorização do teu computador</title>
+  <link rel="stylesheet" href="./tailwind.css">
   <link rel="stylesheet" href="./styles.css">
   <script src="./config.js"></script>
   <script src="./downloads.js" defer></script>
+  <script src="./chat.js" defer></script>
 </head>
 <body>
   <header class="site-header">
@@ -168,5 +170,55 @@
     <p>Um painel claro para o teu computador.</p>
     <span>© <span id="year"></span> EasyDesk</span>
   </footer>
+
+  <button
+    id="chat-launcher"
+    class="chat-launcher tw-fixed tw-bottom-6 tw-right-6 tw-z-50 tw-flex tw-items-center tw-justify-center"
+    type="button"
+    aria-label="Abrir conversa EasyDesk AI"
+    aria-haspopup="dialog"
+    aria-controls="chat-dialog"
+  >
+    <img src="./easydesk-icon.png" alt="" aria-hidden="true">
+    <span class="chat-launcher-label">Falar com a IA</span>
+  </button>
+
+  <div id="chat-overlay" class="chat-overlay tw-fixed tw-inset-0 tw-z-50" hidden>
+    <section id="chat-dialog" class="chat-dialog" role="dialog" aria-modal="true" aria-labelledby="chat-title" aria-hidden="true">
+      <div class="chat-window tw-flex tw-flex-col">
+        <header class="chat-header tw-flex tw-items-center tw-justify-between">
+          <div class="chat-heading tw-flex tw-items-center">
+            <img src="./easydesk-icon.png" alt="" aria-hidden="true">
+            <div>
+              <h2 id="chat-title">EasyDesk AI</h2>
+              <p><span class="chat-status-dot"></span><span id="chat-mode-status">IA local · pronta para descarregar</span></p>
+            </div>
+          </div>
+          <div class="chat-window-actions tw-flex tw-items-center">
+            <button id="chat-minimize" class="chat-icon-button" type="button" aria-label="Minimizar chat" title="Minimizar">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path></svg>
+            </button>
+            <button id="chat-close" class="chat-icon-button" type="button" aria-label="Fechar chat" title="Fechar">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"></path></svg>
+            </button>
+          </div>
+        </header>
+
+        <div id="chat-messages" class="chat-messages tw-flex tw-flex-col" role="log" aria-live="polite" aria-relevant="additions text" aria-label="Mensagens da conversa"></div>
+        <p id="chat-error" class="chat-error" role="alert" hidden></p>
+
+        <form id="chat-form" class="chat-form">
+          <label class="chat-label" for="chat-input">Mensagem</label>
+          <div class="chat-compose tw-flex tw-items-end">
+            <textarea id="chat-input" class="chat-input" rows="1" maxlength="2000" placeholder="Escreve a tua mensagem..." required></textarea>
+            <button id="chat-send" class="chat-send tw-flex tw-items-center tw-justify-center" type="submit" aria-label="Enviar mensagem">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"></path></svg>
+            </button>
+          </div>
+          <p id="chat-hint" class="chat-hint">IA a correr no teu navegador, sem chave. O modelo mais capaz descarrega cerca de 1,5 GB na primeira utilização (até 2,2 GB em modo compatível); depois, as mensagens são processadas localmente.</p>
+        </form>
+      </div>
+    </section>
+  </div>
 </body>
 </html>

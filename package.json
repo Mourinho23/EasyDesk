@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "desktop": "electron .",
+    "build:site-css": "tailwindcss -c tailwind.config.js -i site/tailwind.input.css -o site/tailwind.css --minify",
     "predist:win": "dotnet publish sensor-service\\EasyDesk.SensorService.csproj --configuration Release --output sensor-service\\publish && node scripts\\prepare-node-installer.js",
     "dist:win": "electron-builder --win nsis",
     "dist:mac": "electron-builder --mac dmg",
@@ -27,7 +28,8 @@
   },
   "devDependencies": {
     "electron": "^44.7.0",
-    "electron-builder": "^26.15.3"
+    "electron-builder": "^26.15.3",
+    "tailwindcss": "^3.4.17"
   },
   "optionalDependencies": {
     "macos-temperature-sensor": "^2.1.1",

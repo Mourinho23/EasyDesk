@@ -25,6 +25,8 @@ Aplicação de ambiente de trabalho e painel web para consultar informações so
 
 [Transferir EasyDesk para Windows, macOS e Linux](https://mourinho23.github.io/EasyDesk/)
 
+O site inclui um chat com um modelo de IA de 1,7 mil milhões de parâmetros que corre no navegador, sem chave de API nem conta. Na primeira conversa, o navegador descarrega o modelo (cerca de 1,5 GB com WebGPU ou até 2,2 GB sem suporte WebGPU); depois, as perguntas são processadas localmente. É necessária uma ligação à Internet para carregar a biblioteca e o modelo. A capacidade e a velocidade dependem do dispositivo; por ser um modelo local, a qualidade não é igual à de assistentes maiores na cloud.
+
 ## Instalar e abrir
 
 Descarrega o instalador adequado no site EasyDesk:
