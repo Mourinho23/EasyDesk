@@ -1,7 +1,7 @@
 (() => {
-  const canvas = document.querySelector('#hero-molten-metal');
-  const hero = canvas?.closest('.hero');
-  if (!canvas || !hero) return;
+  document.querySelectorAll('.molten-metal-canvas').forEach(canvas => {
+    const section = canvas.closest('.molten-section');
+    if (!section) return;
 
   const gl = canvas.getContext('webgl2', {
     alpha: true,
@@ -209,19 +209,19 @@
   };
 
   const updatePointer = event => {
-    const bounds = hero.getBoundingClientRect();
+    const bounds = section.getBoundingClientRect();
     target.x = Math.min(1, Math.max(0, (event.clientX - bounds.left) / bounds.width));
     target.y = Math.min(1, Math.max(0, (event.clientY - bounds.top) / bounds.height));
     target.strength = 1;
   };
 
-  hero.addEventListener('pointermove', updatePointer, { passive: true });
-  hero.addEventListener('pointerleave', () => {
+  section.addEventListener('pointermove', updatePointer, { passive: true });
+  section.addEventListener('pointerleave', () => {
     target.strength = 0;
   });
-  hero.addEventListener('pointerdown', event => {
+  section.addEventListener('pointerdown', event => {
     if (!event.isPrimary || event.button !== 0 || event.target.closest('a, button, input, select, textarea')) return;
-    const bounds = hero.getBoundingClientRect();
+    const bounds = section.getBoundingClientRect();
     flare = {
       x: (event.clientX - bounds.left) / bounds.width,
       y: (event.clientY - bounds.top) / bounds.height,
@@ -258,10 +258,11 @@
       lastFrame = 0;
     }
   });
-  visibility.observe(hero);
+  visibility.observe(section);
 
   const sizes = new ResizeObserver(resize);
-  sizes.observe(hero);
+  sizes.observe(section);
   resize();
   start();
+  });
 })();
