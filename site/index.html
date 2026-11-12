@@ -10,6 +10,7 @@
   <title>EasyDesk — Monitorização do teu computador</title>
   <link rel="stylesheet" href="./tailwind.css">
   <link rel="stylesheet" href="./styles.css">
+  <script src="./molten-metal.js" defer></script>
   <script src="./config.js"></script>
   <script src="./downloads.js" defer></script>
   <script src="./chat.js" defer></script>
@@ -28,7 +29,10 @@
   </header>
 
   <main>
-    <section class="hero">
+    <section class="hero molten-section">
+      <div class="molten-background" aria-hidden="true">
+        <canvas class="molten-metal-canvas"></canvas>
+      </div>
       <div class="hero-copy">
         <p class="eyebrow"><span class="live-dot"></span> O teu computador, num só painel</p>
         <h1>Conhece melhor<br>o teu <span>computador.</span></h1>
@@ -94,7 +98,10 @@
       </div>
     </section>
 
-    <section id="downloads" class="downloads-section">
+    <section id="downloads" class="downloads-section molten-section">
+      <div class="molten-background downloads-background" aria-hidden="true">
+        <canvas class="molten-metal-canvas"></canvas>
+      </div>
       <div class="section-wrap downloads-wrap">
         <div class="section-heading">
           <p class="eyebrow">Instalação simples</p>
