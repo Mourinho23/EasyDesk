@@ -39,6 +39,11 @@ function definirUrlPainelRede(url) {
   resolverUrlPainelRede(url);
 }
 
+function obterUrlQrConfigurado() {
+  const urlConfigurada = process.env.EASYDESK_QR_URL || process.env.EASYDESK_PUBLIC_URL;
+  return urlConfigurada ? urlConfigurada.replace(/\/+$/, "") : null;
+}
+
 async function recolherDados() {
   const [
     sistema,
@@ -264,7 +269,9 @@ app.get("/api/info", async (req, res) => {
 });
 
 app.get("/api/qr", async (req, res) => {
-  const enderecoRede = await obterUrlPainelRede();
+  const urlConfigurada = obterUrlQrConfigurado();
+  const enderecoRede = urlConfigurada || await obterUrlPainelRede();
+
   if (!enderecoRede) {
     return res.status(503).json({
       erro: "Não foi detetado um endereço de rede local"

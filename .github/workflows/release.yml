@@ -81,6 +81,33 @@ jobs:
           [IO.File]::WriteAllBytes($certificatePath, $certificateBytes)
           "CSC_LINK=$certificatePath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           "CSC_KEY_PASSWORD=$env:WINDOWS_SIGNING_CERTIFICATE_PASSWORD" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Configure macOS code signing and notarization when available
+        if: matrix.platform == 'macOS Intel' || matrix.platform == 'macOS Apple Silicon'
+        shell: bash
+        env:
+          APPLE_SIGNING_CERTIFICATE_BASE64: ${{ secrets.APPLE_SIGNING_CERTIFICATE_BASE64 }}
+          APPLE_SIGNING_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_SIGNING_CERTIFICATE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+        run: |
+          hasCertificate=false
+          if [ -n "$APPLE_SIGNING_CERTIFICATE_BASE64" ] && [ -n "$APPLE_SIGNING_CERTIFICATE_PASSWORD" ]; then
+            hasCertificate=true
+            echo "$APPLE_SIGNING_CERTIFICATE_BASE64" | base64 --decode > "$RUNNER_TEMP/easydesk-mac-signing.p12"
+            echo "CSC_LINK=$RUNNER_TEMP/easydesk-mac-signing.p12" >> "$GITHUB_ENV"
+            echo "CSC_KEY_PASSWORD=$APPLE_SIGNING_CERTIFICATE_PASSWORD" >> "$GITHUB_ENV"
+          fi
+          if [ -n "$APPLE_TEAM_ID" ]; then
+            echo "APPLE_TEAM_ID=$APPLE_TEAM_ID" >> "$GITHUB_ENV"
+          fi
+          if [ -n "$APPLE_ID" ] && [ -n "$APPLE_APP_SPECIFIC_PASSWORD" ]; then
+            echo "APPLE_ID=$APPLE_ID" >> "$GITHUB_ENV"
+            echo "APPLE_APP_SPECIFIC_PASSWORD=$APPLE_APP_SPECIFIC_PASSWORD" >> "$GITHUB_ENV"
+          fi
+          if [ "$hasCertificate" = "false" ]; then
+            echo "Building an unsigned macOS installer; Gatekeeper may warn."
+          fi
       - name: Verify release tag matches package version
         env:
           RELEASE_TAG: ${{ inputs.release_tag || github.ref_name }}

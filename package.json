@@ -87,7 +87,13 @@
     "mac": {
       "target": "dmg",
       "artifactName": "EasyDesk-${version}-${arch}.${ext}",
-      "category": "public.app-category.utilities"
+      "category": "public.app-category.utilities",
+      "identity": "-",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "notarize": false
     },
     "linux": {
       "maintainer": "Mourinho23 <332061145+Mourinho23@users.noreply.github.com>",

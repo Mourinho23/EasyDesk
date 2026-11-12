@@ -95,6 +95,18 @@ O código QR é gerado localmente, sem depender da Internet, e usa o nome `.loca
 
 Cada computador executa a sua própria instância e apresenta apenas os dados da máquina que está a servir o painel. O EasyDesk não agrega várias máquinas num único painel. Se o servidor deixar de responder, o estado e os campos de armazenamento e utilizador passam a **Desligado**.
 
+## QR code e URL pública
+
+O código QR do painel pode apontar para um URL público em vez do endereço local `.local` quando quiseres usar o painel em ecrãs externos ou partilhar o acesso com mais facilidade. Define uma destas variáveis antes de iniciar o servidor:
+
+```sh
+EASYDESK_QR_URL=https://painel.exemplo.pt
+# ou
+EASYDESK_PUBLIC_URL=https://painel.exemplo.pt
+```
+
+Se não definir nenhuma variável, o EasyDesk continua a usar o endereço local do computador.
+
 ## Segurança e privacidade
 
 O servidor destina-se a uso numa rede local e ainda não tem autenticação própria. Enquanto estiver ativo, outros dispositivos que consigam aceder ao endereço poderão consultar os dados apresentados, incluindo o nome de utilizador e informações do sistema. Não encaminhes a porta 3000 para a Internet nem uses uma rede pública ou não fiável para partilhar o painel.
