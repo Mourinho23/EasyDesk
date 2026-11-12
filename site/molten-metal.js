@@ -70,7 +70,7 @@
       float pointerHeat = exp(-dot(pointerDelta, pointerDelta) * 24.0) * uPointerStrength;
       point += normalize(pointerDelta + vec2(0.0001)) * pointerHeat * 0.55;
 
-      float time = uTime * 0.16;
+      float time = uTime * 0.8;
       vec2 warp = vec2(
         flow(point * 0.47 + vec2(time, -time * 0.6)),
         flow(point * 0.47 + vec2(8.3 - time * 0.7, time))
