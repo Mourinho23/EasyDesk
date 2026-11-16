@@ -27,19 +27,25 @@ jobs:
             command: dist:win
             extra_args: ""
             artifact: windows
-            files: release/EasyDesk-Setup-*.exe
+            files: |
+              release/EasyDesk-Setup-*.exe
+              release/*.sha256
           - platform: macOS Intel
             runner: macos-latest
             command: dist:mac
             extra_args: --x64
             artifact: macos-x64
-            files: release/*-x64.dmg
+            files: |
+              release/*-x64.dmg
+              release/*.sha256
           - platform: macOS Apple Silicon
             runner: macos-latest
             command: dist:mac
             extra_args: --arm64
             artifact: macos-arm64
-            files: release/*-arm64.dmg
+            files: |
+              release/*-arm64.dmg
+              release/*.sha256
           - platform: Linux
             runner: ubuntu-latest
             command: dist:linux
@@ -49,6 +55,7 @@ jobs:
               release/*.AppImage
               release/*.deb
               release/*.rpm
+              release/*.sha256
 
     steps:
       - uses: actions/checkout@v4

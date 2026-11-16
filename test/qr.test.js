@@ -8,7 +8,7 @@ process.env.PORT = "0";
 os.networkInterfaces = () => ({});
 si.networkInterfaceDefault = async () => null;
 
-const server = require("../server");
+const server = require("../app/server");
 
 test("QR respects a custom public URL when configured", async () => {
   if (!server.listening) await once(server, "listening");

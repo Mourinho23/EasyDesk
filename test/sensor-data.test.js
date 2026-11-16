@@ -3,11 +3,11 @@ const fs = require("node:fs");
 const path = require("node:path");
 const test = require("node:test");
 const vm = require("node:vm");
-const { readSensorData } = require("../sensor-data");
+const { readSensorData } = require("../app/sensor-data");
 
 test("application JavaScript parses", () => {
   for (const file of ["server.js", "desktop.js", "sensor-data.js"]) {
-    const source = fs.readFileSync(path.join(__dirname, "..", file), "utf8");
+    const source = fs.readFileSync(path.join(__dirname, "..", "app", file), "utf8");
     assert.doesNotThrow(() => new vm.Script(source, { filename: file }));
   }
 });

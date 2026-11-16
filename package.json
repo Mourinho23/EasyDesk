@@ -2,15 +2,18 @@
   "name": "easydesk",
   "version": "1.0.3",
   "description": "Painel local para monitorizar o hardware e o sistema.",
-  "main": "desktop.js",
+  "main": "app/desktop.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node app/server.js",
     "desktop": "electron .",
-    "build:site-css": "tailwindcss -c tailwind.config.js -i site/tailwind.input.css -o site/tailwind.css --minify",
-    "predist:win": "dotnet publish sensor-service\\EasyDesk.SensorService.csproj --configuration Release --output sensor-service\\publish && node scripts\\prepare-node-installer.js",
+    "build:site-css": "tailwindcss -c site/tailwind.config.js -i site/tailwind.input.css -o site/tailwind.css --minify",
+    "predist:win": "dotnet publish sensor-service\\EasyDesk.SensorService.csproj --configuration Release --output sensor-service\\publish && node scripts\\installer\\prepare-node-installer.js",
     "dist:win": "electron-builder --win nsis",
+    "postdist:win": "node scripts\\installer\\create-checksums.js windows",
     "dist:mac": "electron-builder --mac dmg",
+    "postdist:mac": "node scripts/installer/create-checksums.js mac",
     "dist:linux": "electron-builder --linux",
+    "postdist:linux": "node scripts/installer/create-checksums.js linux",
     "test": "node --test"
   },
   "keywords": [],
@@ -43,10 +46,12 @@
       "output": "release"
     },
     "files": [
-      "desktop.js",
-      "server.js",
-      "sensor-data.js",
-      "Interface/**/*"
+      "app/desktop.js",
+      "app/server.js",
+      "app/sensor-data.js",
+      "app/Interface/index.html",
+      "app/Interface/easydesk-icon.png",
+      "app/Interface/easydesk.ico"
     ],
     "asarUnpack": [
       "node_modules/macos-temperature-sensor/**",

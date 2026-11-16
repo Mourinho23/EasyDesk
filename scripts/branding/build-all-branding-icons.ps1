@@ -1,4 +1,5 @@
 Add-Type -AssemblyName System.Drawing
+Set-Location (Join-Path $PSScriptRoot "..\..")
 
 $userUpload = "C:\Users\6025.tiso25\.gemini\antigravity\brain\0e69a9e9-9bab-4efb-ad01-0f7065f1680e\.user_uploaded\media_1793033915522_96b5d8e5.png"
 
@@ -93,16 +94,15 @@ function Create-MultiResIco($master, $sizes, $outPath) {
 }
 
 # 5. Generate Master PNGs
-$master512.Save("EasyDesk-icon.png", [System.Drawing.Imaging.ImageFormat]::Png)
 $master512.Save("build\icon.png", [System.Drawing.Imaging.ImageFormat]::Png)
 $master512.Save("assets\branding\EasyDesk-app-icon.png", [System.Drawing.Imaging.ImageFormat]::Png)
-$master512.Save("Interface\icon.png", [System.Drawing.Imaging.ImageFormat]::Png)
+$master512.Save("app\Interface\icon.png", [System.Drawing.Imaging.ImageFormat]::Png)
 Write-Output "Saved 512x512 Master PNGs."
 
 # 6. Generate Favicons (PNG)
 $fav128 = Resize-Bitmap $master512 128 128
 $fav128.Save("site\favicon.png", [System.Drawing.Imaging.ImageFormat]::Png)
-$fav128.Save("Interface\favicon.png", [System.Drawing.Imaging.ImageFormat]::Png)
+$fav128.Save("app\Interface\favicon.png", [System.Drawing.Imaging.ImageFormat]::Png)
 $fav128.Dispose()
 Write-Output "Saved favicons (PNG)."
 
@@ -113,7 +113,7 @@ Create-MultiResIco $master512 $icoSizes "build\icon.ico"
 Create-MultiResIco $master512 $icoSizes "build\installerIcon.ico"
 Create-MultiResIco $master512 $icoSizes "build\uninstallerIcon.ico"
 Create-MultiResIco $master512 @(64, 48, 32, 16) "site\favicon.ico"
-Create-MultiResIco $master512 @(64, 48, 32, 16) "Interface\favicon.ico"
+Create-MultiResIco $master512 @(64, 48, 32, 16) "app\Interface\favicon.ico"
 
 # 8. Generate NSIS Installer Header BMP (150x57, 24-bit RGB)
 $headerBmp = New-Object System.Drawing.Bitmap(150, 57, [System.Drawing.Imaging.PixelFormat]::Format24bppRgb)

@@ -2,7 +2,7 @@
 
 set -e
 
-PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 APP_PATH="$HOME/Desktop/EasyDesk.app"
 BUILD_DIR="$(mktemp -d)"
 ICONSET="$BUILD_DIR/EasyDesk.iconset"
@@ -16,7 +16,7 @@ if [[ -e "$APP_PATH" ]]; then
 fi
 
 mkdir -p "$ICONSET"
-qlmanage -t -s 1024 -o "$BUILD_DIR" "$PROJECT_DIR/EasyDesk-icon.svg" >/dev/null
+qlmanage -t -s 1024 -o "$BUILD_DIR" "$PROJECT_DIR/assets/branding/launcher-icon.svg" >/dev/null
 
 for size in 16 32 128 256 512; do
   sips -z "$size" "$size" "$ICON_PNG" --out "$ICONSET/icon_${size}x${size}.png" >/dev/null
@@ -30,7 +30,7 @@ cat > "$APPLESCRIPT" <<APPLESCRIPT
 property serverPID : ""
 
 on run
-  set launcherPath to "$PROJECT_DIR/iniciar-easydesk-silencioso.sh"
+  set launcherPath to "$PROJECT_DIR/scripts/launchers/iniciar-easydesk-silencioso.sh"
   set launchResult to do shell script "/bin/bash " & quoted form of launcherPath
   if launchResult starts with "started:" then
     set serverPID to text 9 thru (length of launchResult) of launchResult

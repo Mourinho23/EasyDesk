@@ -21,6 +21,16 @@ Aplicação de ambiente de trabalho e painel web para consultar informações so
 - Acesso opcional ao painel a partir de outros dispositivos na mesma rede local.
 - Leituras térmicas sujeitas ao hardware, aos controladores e ao sistema operativo.
 
+## Estrutura do projeto
+
+- `app/`: aplicação desktop, servidor, leituras de sensores e interface.
+- `assets/branding/`: logótipos, ícones e imagens do instalador.
+- `build/`: configuração e recursos do empacotamento.
+- `scripts/branding/`, `scripts/installer/` e `scripts/launchers/`: ferramentas de compilação, instaladores e lançadores de desenvolvimento.
+- `site/`: página de downloads e respetivos recursos.
+- `sensor-service/`: serviço auxiliar de sensores para Windows.
+- `test/`: testes automatizados.
+
 ## Site de downloads
 
 [Transferir EasyDesk para Windows, macOS e Linux](https://mourinho23.github.io/EasyDesk/)
@@ -57,7 +67,7 @@ npm start
 
 O terminal indica o endereço do painel. Para parar o servidor iniciado com `npm start`, carrega em **Ctrl+C**. Para fechar a aplicação desktop, fecha a respetiva janela.
 
-No Windows, também podes abrir o atalho de desenvolvimento `Iniciar EasyDesk.lnk`, que inicia o servidor e abre o painel no browser.
+No Windows, também podes executar `scripts\launchers\Iniciar EasyDesk.bat` para iniciar o servidor de desenvolvimento e abrir o painel no browser.
 
 ## Criar instaladores
 
@@ -76,6 +86,14 @@ npm ci
 ```
 
 As releases Windows são assinadas com Authenticode quando os secrets `WINDOWS_SIGNING_CERTIFICATE_BASE64` (certificado PFX codificado em Base64) e `WINDOWS_SIGNING_CERTIFICATE_PASSWORD` estão configurados. Sem esses secrets, o workflow publica um instalador sem assinatura e o SmartScreen poderá apresentar avisos. A assinatura identifica o editor, mas a reputação SmartScreen e os falsos positivos de antivírus dependem também dos fornecedores.
+
+Cada instalador publicado inclui também um ficheiro `.sha256` com o respetivo hash SHA-256. No Windows, podes confirmar o hash do instalador transferido com:
+
+```powershell
+Get-FileHash ".\EasyDesk-Setup-1.0.3.exe" -Algorithm SHA256
+```
+
+Compara o valor `Hash` apresentado com o hash publicado no ficheiro `.sha256` correspondente. Esta verificação confirma a integridade do ficheiro, mas não assina o instalador nem substitui um certificado; um instalador sem assinatura pode continuar a mostrar avisos do SmartScreen.
 
 Depois executa **apenas o comando correspondente ao sistema onde estás a compilar**. Os ficheiros finais são colocados em `release/`. A compilação macOS pode necessitar das ferramentas de linha de comandos da Apple. O workflow `release.yml` compila automaticamente em Windows, macOS e Linux quando é enviada uma etiqueta de versão válida.
 

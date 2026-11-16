@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)" || exit 1
+PROJECT_DIR="$(cd "$(dirname "$0")/../.." && pwd)" || exit 1
 LOG_FILE="$HOME/Library/Logs/EasyDesk.log"
 PORT="${PORT:-3000}"
 
@@ -43,7 +43,7 @@ if curl -fsS "$URL/" >/dev/null 2>&1; then
 fi
 
 cd "$PROJECT_DIR" || exit 1
-PORT="$PORT" nohup node server.js >>"$LOG_FILE" 2>&1 </dev/null &
+PORT="$PORT" nohup node app/server.js >>"$LOG_FILE" 2>&1 </dev/null &
 
 for attempt in {1..30}; do
   if curl -fsS "$URL/" >/dev/null 2>&1; then
