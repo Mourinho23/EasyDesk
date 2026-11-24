@@ -87,7 +87,10 @@
         try {
           return await createGenerator(device, onProgress);
         } catch (error) {
-          if (!adapter || !/webgpu|gpu|adapter|device|execution provider/i.test(error.message)) {
+          const errorMessage = typeof error?.message === "string" ? error.message : String(error);
+          const canFallback = /webgpu|gpu|adapter|device|execution provider|aborted|out of memory|memory allocation/i
+            .test(errorMessage);
+          if (!adapter || !canFallback) {
             throw error;
           }
           setStatus("A mudar para modelo compatível...");
