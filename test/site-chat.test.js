@@ -6,24 +6,23 @@ const vm = require("node:vm");
 
 const site = path.join(__dirname, "..", "site");
 
-test("website chat runs a local AI model without requesting an API key", () => {
+test("website chat streams online AI responses without downloading a model", () => {
   const html = fs.readFileSync(path.join(site, "index.html"), "utf8");
   const script = fs.readFileSync(path.join(site, "chat.js"), "utf8");
+  const config = fs.readFileSync(path.join(site, "config.js"), "utf8");
   const tailwind = fs.readFileSync(path.join(site, "tailwind.css"), "utf8");
 
   assert.match(html, /id="chat-launcher"/);
   assert.match(html, /id="chat-title">EasyDesk AI/);
   assert.match(html, /src="\.\/easydesk-icon\.png"/);
   assert.match(html, /href="\.\/tailwind\.css"/);
-  assert.match(html, /IA a correr no teu navegador, sem chave/);
-  assert.doesNotMatch(html, /chat-api-key|Gemini|chave da API/i);
-  assert.match(script, /webgpu:\s*"onnx-community\/Qwen3-1\.7B-ONNX"/);
-  assert.match(script, /wasm:\s*"onnx-community\/Qwen3-0\.6B-ONNX"/);
-  assert.match(script, /modelIds\[device\]/);
-  assert.match(script, /temperature: 0\.7/);
-  assert.match(script, /top_p: 0\.8/);
-  assert.match(script, /@huggingface\/transformers/);
-  assert.doesNotMatch(script, /generativelanguage\.googleapis\.com|apiKey|demoReply/);
+  assert.match(html, /não é necessário descarregar um modelo/);
+  assert.match(html, /mensagens são enviadas à Google Gemini API/);
+  assert.match(script, /window\.EASYDESK_AI_ENDPOINT/);
+  assert.match(script, /response\.body\.getReader\(\)/);
+  assert.match(script, /part\.thought/);
+  assert.doesNotMatch(script, /@huggingface\/transformers|Qwen3-|generativelanguage\.googleapis\.com|apiKey/);
+  assert.match(config, /EASYDESK_AI_ENDPOINT/);
   assert.match(tailwind, /\.tw-fixed\{position:fixed\}/);
   assert.doesNotThrow(() => new vm.Script(script, { filename: "site/chat.js" }));
 });

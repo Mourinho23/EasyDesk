@@ -10,18 +10,11 @@
   const messagesElement = document.getElementById("chat-messages");
   const errorElement = document.getElementById("chat-error");
   const modeStatus = document.getElementById("chat-mode-status");
-  const welcomeText = "Olá! Sou o EasyDesk AI. Escreve a tua pergunta — não precisas de chave nem de conta.";
-  const modelIds = {
-    webgpu: "onnx-community/Qwen3-1.7B-ONNX",
-    wasm: "onnx-community/Qwen3-0.6B-ONNX"
-  };
-  const transformersUrl = "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.7.2";
+  const welcomeText = "Olá! Sou o EasyDesk AI. Escreve a tua pergunta.";
+  const apiEndpoint = window.EASYDESK_AI_ENDPOINT;
 
-  let generatorPromise;
-  let generator;
   let history = [];
   let returnFocus;
-  let activeRequest = 0;
 
   function addMessage(role, text, extraClass = "") {
     const message = document.createElement("p");
@@ -59,99 +52,68 @@
     if (returnFocus instanceof HTMLElement) returnFocus.focus();
   }
 
-  async function createGenerator(device, onProgress) {
-    const { pipeline } = await import(transformersUrl);
-    const options = {
-      dtype: device === "webgpu" ? "q4f16" : "q4",
-      progress_callback: onProgress
-    };
-    if (device === "webgpu") options.device = "webgpu";
-    return pipeline("text-generation", modelIds[device], options);
+  function mostrarErroApi(responseStatus, message) {
+    if (responseStatus === 429) {
+      return message || "A quota gratuita ou o limite temporário foi atingido. Tenta novamente mais tarde.";
+    }
+    return message || "Não foi possível ligar à IA online. Tenta novamente.";
   }
 
-  async function getGenerator(onProgress, requestId) {
-    if (generator) return generator;
-    if (!generatorPromise) {
-      generatorPromise = (async () => {
-        let adapter = null;
-        if (navigator.gpu?.requestAdapter) {
-          try {
-            adapter = await navigator.gpu.requestAdapter();
-          } catch {
-            adapter = null;
-          }
-        }
-
-        const device = adapter ? "webgpu" : "wasm";
-        setStatus(adapter ? "IA local · modo gráfico" : "IA local · modelo compatível");
-        try {
-          return await createGenerator(device, onProgress);
-        } catch (error) {
-          const errorMessage = typeof error?.message === "string" ? error.message : String(error);
-          const canFallback = /webgpu|gpu|adapter|device|execution provider|aborted|out of memory|memory allocation/i
-            .test(errorMessage);
-          if (!adapter || !canFallback) {
-            throw error;
-          }
-          setStatus("A mudar para modelo compatível...");
-          if (requestId === activeRequest) {
-            const pending = messagesElement.querySelector(".chat-message.pending");
-            if (pending) pending.textContent = "A preparar um modelo mais leve para este dispositivo...";
-          }
-          return createGenerator("wasm", onProgress);
-        }
-      })()
-        .then(instance => {
-          generator = instance;
-          setStatus("IA local · pronta");
-          return instance;
-        })
-        .catch(error => {
-          generatorPromise = null;
-          setStatus("IA local · erro ao carregar");
-          throw error;
-        });
+  async function lerRespostaStreaming(response, onText) {
+    if (!response.body) {
+      throw new Error("O navegador não conseguiu iniciar a resposta da IA.");
     }
-    return generatorPromise;
-  }
 
-  async function generateReply(question, onProgress, requestId) {
-    const model = await getGenerator(onProgress, requestId);
-    setStatus("IA local · a responder");
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    let answer = "";
 
-    const messages = [
-      {
-        role: "system",
-        content: "És um assistente de IA útil e conversacional. Responde diretamente ao que a pessoa perguntou, usando o contexto das mensagens anteriores quando for relevante. Se a pergunta for ambígua, faz uma pergunta curta para esclarecer; não mudes de assunto nem dês uma resposta genérica. Dá explicações corretas e práticas, com passos quando forem úteis. Se não souberes ou não tiveres informação suficiente, diz isso claramente em vez de inventar. Responde sempre em português europeu, tratando a pessoa por tu; usa «computador» e «ficheiro», nunca «você», «celular» ou «usuário». Podes responder sobre assuntos gerais e explicar o EasyDesk, mas não afirmes que tens acesso ao computador da pessoa. Mantém as respostas claras e adequadas à pergunta."
-      },
-      ...history,
-      { role: "user", content: question }
-    ];
-    const result = await model(messages, {
-      max_new_tokens: 320,
-      do_sample: true,
-      temperature: 0.7,
-      top_p: 0.8,
-      top_k: 20,
-      repetition_penalty: 1.05,
-      tokenizer_encode_kwargs: { enable_thinking: false }
-    });
+    function processarEvento(evento) {
+      const data = evento
+        .split(/\r?\n/)
+        .filter(line => line.startsWith("data:"))
+        .map(line => line.slice(5).trim())
+        .join("\n");
+      if (!data || data === "[DONE]") return;
 
-    const generated = result?.[0]?.generated_text;
-    const rawAnswer = Array.isArray(generated)
-      ? generated.at(-1)?.content
-      : generated;
-    if (typeof rawAnswer !== "string" || !rawAnswer.trim()) {
-      throw new Error("A IA não conseguiu gerar uma resposta. Tenta reformular a pergunta.");
+      let chunk;
+      try {
+        chunk = JSON.parse(data);
+      } catch {
+        throw new Error("A IA devolveu uma resposta num formato inválido.");
+      }
+
+      if (chunk.error?.message) {
+        throw new Error(chunk.error.message);
+      }
+      const parts = chunk.candidates?.[0]?.content?.parts || [];
+      for (const part of parts) {
+        if (part.thought || typeof part.text !== "string" || !part.text) continue;
+        answer += part.text;
+        onText(part.text);
+      }
     }
-    const answer = rawAnswer
-      .replace(/<think>[\s\S]*?<\/think>/gi, "")
-      .replace(/<think>[\s\S]*$/i, "")
-      .trim();
-    if (!answer) {
-      throw new Error("A IA não concluiu uma resposta. Tenta novamente.");
+
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const events = buffer.split(/\r?\n\r?\n/);
+        buffer = events.pop();
+        for (const event of events) processarEvento(event);
+      }
+      buffer += decoder.decode();
+      if (buffer.trim()) processarEvento(buffer);
+    } finally {
+      reader.releaseLock();
     }
-    return answer;
+
+    if (!answer.trim()) {
+      throw new Error("A IA terminou sem produzir uma resposta. Tenta novamente.");
+    }
+    return answer.trim();
   }
 
   launcher.addEventListener("click", openChat);
@@ -200,7 +162,6 @@
     const question = input.value.trim();
     if (!question || sendButton.disabled) return;
 
-    const requestId = ++activeRequest;
     errorElement.hidden = true;
     errorElement.textContent = "";
     addMessage("user", question);
@@ -209,42 +170,60 @@
     input.disabled = true;
     sendButton.disabled = true;
 
-    const pending = document.createElement("p");
-    pending.className = "chat-message assistant pending";
-    pending.setAttribute("aria-label", "A preparar resposta");
-    pending.innerHTML = '<span class="chat-typing" aria-hidden="true"><i></i><i></i><i></i></span>';
-    messagesElement.append(pending);
-    messagesElement.scrollTop = messagesElement.scrollHeight;
-
-    const onProgress = progress => {
-      if (requestId !== activeRequest || progress.status !== "progress") return;
-      const percent = Number.isFinite(progress.progress)
-        ? ` · ${Math.round(progress.progress)}%`
-        : "";
-      const file = String(progress.file || "").split(/[\\/]/).pop();
-      pending.textContent = file
-        ? `A descarregar a IA (${file}${percent})... Só é necessário na primeira utilização.`
-        : "A descarregar o modelo de IA...";
-      messagesElement.scrollTop = messagesElement.scrollHeight;
-    };
+    const pending = addMessage("assistant", "A ligar à IA online...", "pending");
+    let answerElement;
 
     try {
-      const answer = await generateReply(question, onProgress, requestId);
-      pending.remove();
-      addMessage("assistant", answer);
+      if (!apiEndpoint) {
+        throw new Error("O serviço online ainda não está configurado.");
+      }
+
+      setStatus("Gemini · a pensar e a responder");
+      const response = await fetch(apiEndpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [
+            ...history,
+            { role: "user", content: question }
+          ].slice(-12)
+        })
+      });
+
+      if (!response.ok) {
+        let errorMessage;
+        try {
+          errorMessage = (await response.json()).error;
+        } catch {
+          errorMessage = null;
+        }
+        throw new Error(mostrarErroApi(response.status, errorMessage));
+      }
+
+      const answer = await lerRespostaStreaming(response, text => {
+        if (!answerElement) {
+          pending.remove();
+          answerElement = addMessage("assistant", "");
+        }
+        answerElement.textContent += text;
+        messagesElement.scrollTop = messagesElement.scrollHeight;
+      });
+      if (answerElement) answerElement.textContent = answer;
+      else {
+        pending.remove();
+        addMessage("assistant", answer);
+      }
+
       history.push(
         { role: "user", content: question },
         { role: "assistant", content: answer }
       );
       history = history.slice(-12);
-      setStatus("IA local · pronta");
+      setStatus("Gemini · pronta");
     } catch (error) {
       pending.remove();
-      setStatus("IA local · não disponível");
-      const errorMessage = typeof error?.message === "string" ? error.message : "";
-      errorElement.textContent = /fetch|network|download|load failed/i.test(errorMessage)
-        ? "Não foi possível descarregar a IA. Verifica a ligação à Internet e tenta novamente."
-        : errorMessage || "Não foi possível iniciar a IA. Tenta novamente.";
+      setStatus("Gemini · indisponível");
+      errorElement.textContent = error?.message || "Não foi possível obter uma resposta. Tenta novamente.";
       errorElement.hidden = false;
     } finally {
       input.disabled = false;
@@ -253,5 +232,6 @@
     }
   });
 
+  setStatus(apiEndpoint ? "Gemini · pronta" : "Gemini · por configurar");
   resetConversation();
 })();

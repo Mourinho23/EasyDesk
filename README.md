@@ -35,7 +35,17 @@ Aplicação de ambiente de trabalho e painel web para consultar informações so
 
 [Transferir EasyDesk para Windows, macOS e Linux](https://mourinho23.github.io/EasyDesk/)
 
-O site inclui um chat com um modelo de IA que corre no navegador, sem chave de API nem conta. Na primeira conversa, o navegador descarrega o modelo (cerca de 1,5 GB com WebGPU ou até 920 MB em modo compatível); depois, as perguntas são processadas localmente. O modo compatível usa um modelo mais pequeno para funcionar em mais dispositivos e evitar os limites de memória do navegador. É necessária uma ligação à Internet para carregar a biblioteca e o modelo. A capacidade e a velocidade dependem do dispositivo; por ser um modelo local, a qualidade não é igual à de assistentes maiores na cloud.
+O site inclui um chat online com Gemini 3.5 Flash-Lite. As respostas são transmitidas enquanto são geradas e não é necessário descarregar um modelo para o navegador. As mensagens são enviadas à Google Gemini API; no plano gratuito, a Google pode usar os dados para melhorar os produtos, e aplicam-se limites de utilização. A chave da API fica num Cloudflare Worker e nunca é enviada ao navegador.
+
+Para configurar o serviço, cria uma chave Gemini no [Google AI Studio](https://aistudio.google.com/api-keys), inicia sessão no Cloudflare com o Wrangler e executa:
+
+```sh
+npx wrangler login
+npx wrangler secret put GEMINI_API_KEY --config worker/wrangler.toml
+npx wrangler deploy --config worker/wrangler.toml
+```
+
+Depois substitui a string vazia de `window.EASYDESK_AI_ENDPOINT` em `site/config.js` pelo URL `/chat` indicado pelo Wrangler (por exemplo, `https://easydesk-ai.<conta>.workers.dev/chat`) e publica o site. O chat online só fica ativo depois de este endpoint ser configurado e o Worker ser publicado. O Worker limita cada endereço IP a dez pedidos por minuto e aceita pedidos apenas do domínio EasyDesk. A API Gemini gratuita continua sujeita a quotas e disponibilidade; não é uma API gratuita e ilimitada do ChatGPT.
 
 ## Instalar e abrir
 
