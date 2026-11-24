@@ -103,6 +103,9 @@ async function criarJanela() {
 
 app.whenReady().then(async () => {
   await startSensorService();
+  if (!process.env.EASYDESK_DATA_DIR) {
+    process.env.EASYDESK_DATA_DIR = app.getPath("userData");
+  }
   server = require("./server");
   await criarJanela();
 }).catch(erro => {

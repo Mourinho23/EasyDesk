@@ -48,7 +48,7 @@ Function EasyDeskSensorPageCreate
 
   ${NSD_CreateRadioButton} 0 20u 100% 18u "Instalar sem os sensores"
   Pop $EasyDeskSensorNone
-  ${NSD_CreateRadioButton} 0 48u 100% 30u "Instalar com os sensores (requer permissões de administrador)"
+  ${NSD_CreateRadioButton} 0 48u 100% 30u "Instalar serviço de sensores (requer administrador)"
   Pop $EasyDeskSensorWith
 
   ${If} $EasyDeskSensorChoice == "1"

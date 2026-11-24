@@ -90,7 +90,7 @@ As releases Windows são assinadas com Authenticode quando os secrets `WINDOWS_S
 Cada instalador publicado inclui também um ficheiro `.sha256` com o respetivo hash SHA-256. No Windows, podes confirmar o hash do instalador transferido com:
 
 ```powershell
-Get-FileHash ".\EasyDesk-Setup-1.0.3.exe" -Algorithm SHA256
+Get-FileHash ".\EasyDesk-Setup-1.0.4.exe" -Algorithm SHA256
 ```
 
 Compara o valor `Hash` apresentado com o hash publicado no ficheiro `.sha256` correspondente. Esta verificação confirma a integridade do ficheiro, mas não assina o instalador nem substitui um certificado; um instalador sem assinatura pode continuar a mostrar avisos do SmartScreen.
@@ -99,7 +99,7 @@ Depois executa **apenas o comando correspondente ao sistema onde estás a compil
 
 ## Sensores e leituras
 
-O instalador Windows apresenta duas opções: sem o auxiliar adicional de sensores ou com o auxiliar de temperatura e potência baseado no LibreHardwareMonitor. A segunda opção requer permissões de administrador, instala um serviço protegido do Windows e necessita do .NET Framework 4.7.2 ou superior. O serviço só é iniciado enquanto o EasyDesk está aberto e é parado quando a aplicação fecha. As leituras continuam dependentes dos sensores expostos pelo hardware e pelos controladores.
+O instalador Windows apresenta duas opções: sem o auxiliar adicional de sensores ou com o auxiliar de temperatura e potência baseado no LibreHardwareMonitor. A segunda opção requer permissões de administrador, instala um serviço protegido do Windows e necessita do .NET Framework 4.7.2 ou superior. O serviço só é iniciado enquanto o EasyDesk está aberto e é parado quando a aplicação fecha. O painel partilha uma única recolha de dados, atualizada a cada cinco segundos; o serviço reutiliza as leituras dos sensores durante esse intervalo para evitar trabalho repetido. A última atualização fica guardada no computador e no navegador para continuar visível se a ligação ao painel for interrompida. As leituras continuam dependentes dos sensores expostos pelo hardware e pelos controladores.
 
 No macOS, o instalador inclui o leitor adequado a Macs Intel ou Apple Silicon. A leitura de potência usa o `powermetrics` fornecido pelo sistema e requer privilégios de administrador. No Linux, as temperaturas são lidas diretamente dos sensores expostos pelo kernel; a potência da CPU só fica disponível quando o kernel publica contadores Intel/AMD RAPL.
 

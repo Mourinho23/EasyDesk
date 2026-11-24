@@ -1,6 +1,6 @@
 {
   "name": "easydesk",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Painel local para monitorizar o hardware e o sistema.",
   "main": "app/desktop.js",
   "scripts": {

@@ -538,7 +538,9 @@ header p {
 
 <script>
   const naoEncontrado = "Não encontrado";
+  const snapshotStorageKey = "easydesk:last-update";
   let eventosAtivos;
+  let temSnapshot = false;
   let codigoQrCarregado = false;
   let codigoQrEmCarregamento = false;
 
@@ -942,18 +944,35 @@ header p {
     eventosAtivos = new EventSource("/events");
 
     eventosAtivos.onopen = () => atualizarElemento("estado-ligacao", "Ligado");
-    eventosAtivos.onmessage = evento => atualizarDashboard(JSON.parse(evento.data));
-    eventosAtivos.onerror = () => {
-      atualizarElemento("estado-ligacao", "Desligado");
-      atualizarElemento("ultima-atualizacao", "Desligado");
-      atualizarElemento("armazenamento-nome", "Desligado");
-      atualizarElemento("armazenamento-disponivel", "Desligado");
-      atualizarElemento("armazenamento-tamanho", "Desligado");
-      atualizarElemento("armazenamento-usado", "Desligado");
-      atualizarElemento("armazenamento-percentagem", "Desligado");
-      atualizarElemento("armazenamento-utilizador", "Desligado");
-      atualizarBarra("armazenamento-barra", null, 75, 90);
+    eventosAtivos.onmessage = evento => {
+      const dados = JSON.parse(evento.data);
+      atualizarDashboard(dados);
+      temSnapshot = true;
+      try {
+        localStorage.setItem(snapshotStorageKey, JSON.stringify(dados));
+      } catch (erro) {
+        console.warn("Não foi possível guardar a última atualização neste dispositivo:", erro.message);
+      }
     };
+    eventosAtivos.onerror = () => {
+      atualizarElemento(
+        "estado-ligacao",
+        temSnapshot ? "Desligado — última atualização guardada" : "Desligado"
+      );
+    };
+  }
+
+  function carregarUltimoSnapshot() {
+    try {
+      const conteudo = localStorage.getItem(snapshotStorageKey);
+      if (!conteudo) return;
+      const dados = JSON.parse(conteudo);
+      if (!dados || typeof dados !== "object" || !dados.momento) return;
+      atualizarDashboard(dados);
+      temSnapshot = true;
+    } catch (erro) {
+      console.warn("Não foi possível carregar a última atualização guardada:", erro.message);
+    }
   }
 
   async function carregarCodigoQr() {
@@ -1038,6 +1057,7 @@ header p {
   const abaInicial = window.location.hash === "#acesso" ? "acesso" : "principal";
   mostrarAba(abaInicial);
   carregarCodigoQr();
+  carregarUltimoSnapshot();
   iniciarAtualizacaoAoVivo();
 </script>
 </body>

@@ -2,18 +2,27 @@ const express = require("express");
 const cors = require("cors");
 const os = require("os");
 const path = require("path");
+const fs = require("node:fs/promises");
 const si = require("systeminformation");
 const QRCode = require("qrcode");
 const { readSensorData } = require("./sensor-data");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const UPDATE_INTERVAL_MS = 5000;
+const DATA_DIRECTORY = process.env.EASYDESK_DATA_DIR || path.join(os.homedir(), ".easydesk");
+const SNAPSHOT_PATH = path.join(DATA_DIRECTORY, "last-update.json");
 
 app.use(cors());
 app.use(express.static(path.join(__dirname, "Interface")));
 
 let clientes = [];
 let ultimoErroSensores = null;
+let ultimoSnapshot = null;
+let carregamentoSnapshot;
+let recolhaAtiva;
+let ultimaRecolha = 0;
+let intervaloAtualizacao;
 let servidor;
 let servidorRede;
 let urlPainelRede;
@@ -251,6 +260,75 @@ async function recolherDados() {
   };
 }
 
+async function carregarSnapshot() {
+  if (ultimoSnapshot) return ultimoSnapshot;
+  if (!carregamentoSnapshot) {
+    carregamentoSnapshot = fs.readFile(SNAPSHOT_PATH, "utf8")
+      .then(conteudo => {
+        const snapshot = JSON.parse(conteudo);
+        if (!snapshot || typeof snapshot !== "object" || !snapshot.momento) {
+          throw new Error("O ficheiro de última atualização não tem um formato válido.");
+        }
+        ultimoSnapshot = snapshot;
+        return snapshot;
+      })
+      .catch(erro => {
+        if (erro.code !== "ENOENT") {
+          console.error("Não foi possível carregar a última atualização guardada:", erro.message);
+        }
+        return null;
+      });
+  }
+  return carregamentoSnapshot;
+}
+
+async function guardarSnapshot(snapshot) {
+  const ficheiroTemporario = `${SNAPSHOT_PATH}.tmp`;
+  try {
+    await fs.mkdir(DATA_DIRECTORY, { recursive: true });
+    await fs.writeFile(ficheiroTemporario, JSON.stringify(snapshot), "utf8");
+    await fs.rename(ficheiroTemporario, SNAPSHOT_PATH);
+  } catch (erro) {
+    console.error("Não foi possível guardar a última atualização:", erro.message);
+    try {
+      await fs.unlink(ficheiroTemporario);
+    } catch (erroLimpeza) {
+      if (erroLimpeza.code !== "ENOENT") {
+        console.error("Não foi possível limpar o ficheiro temporário da atualização:", erroLimpeza.message);
+      }
+    }
+  }
+}
+
+function enviarSnapshot(cliente, snapshot) {
+  cliente.write(`data: ${JSON.stringify(snapshot)}\n\n`);
+}
+
+async function atualizarSnapshot() {
+  if (recolhaAtiva) return recolhaAtiva;
+
+  recolhaAtiva = recolherDados()
+    .then(async snapshot => {
+      ultimoSnapshot = snapshot;
+      ultimaRecolha = Date.now();
+      await guardarSnapshot(snapshot);
+      clientes.forEach(cliente => enviarSnapshot(cliente, snapshot));
+      return snapshot;
+    })
+    .finally(() => {
+      recolhaAtiva = null;
+    });
+  return recolhaAtiva;
+}
+
+async function obterSnapshotAtual() {
+  await carregarSnapshot();
+  if (!ultimoSnapshot || Date.now() - ultimaRecolha >= UPDATE_INTERVAL_MS) {
+    return atualizarSnapshot();
+  }
+  return ultimoSnapshot;
+}
+
 function arredarTemperatura(valor) {
   return valor === undefined || valor === null
     ? null
@@ -259,7 +337,7 @@ function arredarTemperatura(valor) {
 
 app.get("/api/info", async (req, res) => {
   try {
-    res.json(await recolherDados());
+    res.json(await obterSnapshotAtual());
   } catch (erro) {
     res.status(500).json({
       erro: "Não foi possível recolher os dados do computador",
@@ -302,23 +380,10 @@ app.get("/events", async (req, res) => {
 
   clientes.push(res);
 
-  const enviar = async () => {
-    try {
-      const dados = await recolherDados();
-      res.write(`data: ${JSON.stringify(dados)}\n\n`);
-    } catch (erro) {
-      res.write(`event: erro\ndata: ${JSON.stringify({
-        mensagem: erro.message
-      })}\n\n`);
-    }
-  };
-
-  await enviar();
-
-  const intervalo = setInterval(enviar, 2000);
+  const snapshot = await carregarSnapshot();
+  if (snapshot) enviarSnapshot(res, snapshot);
 
   req.on("close", () => {
-    clearInterval(intervalo);
     clientes = clientes.filter(cliente => cliente !== res);
     res.end();
   });
@@ -386,6 +451,20 @@ servidor = app.listen(PORT, "127.0.0.1", () => {
   const nomeComputador = os.hostname().replace(/\.local$/i, "");
   definirUrlPainelRede(`http://${nomeComputador}.local:${endereco.port}`);
   iniciarServidorRede(endereco.port);
+  void carregarSnapshot().finally(() => {
+    atualizarSnapshot().catch(erro => {
+      console.error("Não foi possível atualizar os dados do computador:", erro.message);
+    });
+  });
+  intervaloAtualizacao = setInterval(() => {
+    atualizarSnapshot().catch(erro => {
+      console.error("Não foi possível atualizar os dados do computador:", erro.message);
+    });
+  }, UPDATE_INTERVAL_MS);
+});
+
+servidor.on("close", () => {
+  clearInterval(intervaloAtualizacao);
 });
 
 module.exports = servidor;

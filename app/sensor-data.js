@@ -5,7 +5,7 @@ const { promisify } = require("util");
 
 const execFileAsync = promisify(execFile);
 const WINDOWS_SENSOR_URL = "http://127.0.0.1:47621/sensors";
-const SENSOR_CACHE_MS = 1000;
+const SENSOR_CACHE_MS = 5000;
 
 let cachedReadings;
 let cachedUntil = 0;

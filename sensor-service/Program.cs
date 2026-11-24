@@ -25,11 +25,14 @@ namespace EasyDesk.SensorService
     {
         private const int Port = 47621;
         private static readonly TimeSpan IdleTimeout = TimeSpan.FromSeconds(30);
+        private static readonly TimeSpan SensorCacheDuration = TimeSpan.FromSeconds(5);
         private readonly object _computerLock = new object();
         private Computer _computer;
         private TcpListener _listener;
         private CancellationTokenSource _cancellation;
-        private DateTime _lastRequest = DateTime.UtcNow;
+        private string _cachedReadingsJson;
+        private DateTime _cachedReadingsUntilUtc;
+        private long _lastRequestTicks = DateTime.UtcNow.Ticks;
 
         public SensorService()
         {
@@ -53,7 +56,7 @@ namespace EasyDesk.SensorService
             _cancellation = new CancellationTokenSource();
             _listener = new TcpListener(IPAddress.Loopback, Port);
             _listener.Start();
-            _lastRequest = DateTime.UtcNow;
+            Interlocked.Exchange(ref _lastRequestTicks, DateTime.UtcNow.Ticks);
             _ = Task.Run(() => AcceptRequests(_cancellation.Token));
             _ = Task.Run(() => StopWhenIdle(_cancellation.Token));
         }
@@ -115,8 +118,8 @@ namespace EasyDesk.SensorService
                             return;
                         }
 
-                        _lastRequest = DateTime.UtcNow;
-                        WriteResponse(stream, 200, "OK", new JavaScriptSerializer().Serialize(ReadSensors()));
+                        Interlocked.Exchange(ref _lastRequestTicks, DateTime.UtcNow.Ticks);
+                        WriteResponse(stream, 200, "OK", ReadSensors());
                     }
                 }
                 catch (Exception error)
@@ -127,14 +130,19 @@ namespace EasyDesk.SensorService
             }
         }
 
-        private object ReadSensors()
+        private string ReadSensors()
         {
             lock (_computerLock)
             {
+                if (_cachedReadingsJson != null && DateTime.UtcNow < _cachedReadingsUntilUtc)
+                {
+                    return _cachedReadingsJson;
+                }
+
                 _computer.Accept(new UpdateVisitor());
                 var readings = EnumerateSensors(_computer.Hardware).ToList();
 
-                return new
+                _cachedReadingsJson = new JavaScriptSerializer().Serialize(new
                 {
                     available = true,
                     cpuTemperatureCelsius = HighestValue(readings, HardwareType.Cpu, SensorType.Temperature),
@@ -144,7 +152,9 @@ namespace EasyDesk.SensorService
                     gpuPowerWatts = PreferredPower(readings, IsGpu, "board", "total", "package"),
                     systemPowerWatts = PreferredPower(readings, HardwareType.PowerMonitor, "total", "output"),
                     powerSupplyEfficiencyPercent = PowerSupplyEfficiency(readings)
-                };
+                });
+                _cachedReadingsUntilUtc = DateTime.UtcNow.Add(SensorCacheDuration);
+                return _cachedReadingsJson;
             }
         }
 
@@ -267,7 +277,8 @@ namespace EasyDesk.SensorService
                     return;
                 }
 
-                if (DateTime.UtcNow - _lastRequest < IdleTimeout)
+                var lastRequest = new DateTime(Interlocked.Read(ref _lastRequestTicks), DateTimeKind.Utc);
+                if (DateTime.UtcNow - lastRequest < IdleTimeout)
                 {
                     continue;
                 }
