@@ -1,2 +1,2 @@
 window.EASYDESK_RELEASE_REPOSITORY = "Mourinho23/EasyDesk";
-window.EASYDESK_AI_ENDPOINT = "";
+window.EASYDESK_AI_ENDPOINT = "https://easydesk-ai.easydesk-ia.workers.dev/chat";
