@@ -185,9 +185,9 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           messages: [
-            ...history,
+            ...history.slice(-10),
             { role: "user", content: question }
-          ].slice(-12)
+          ]
         })
       });
 
