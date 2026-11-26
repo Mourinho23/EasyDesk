@@ -136,7 +136,7 @@ export default {
       return jsonResponse(400, "O pedido não contém JSON válido.", headers);
     }
 
-    if (!validateMessages(payload.messages)) {
+    if (!payload || typeof payload !== "object" || !validateMessages(payload.messages)) {
       return jsonResponse(400, "A conversa não tem um formato válido ou é demasiado longa.", headers);
     }
 
