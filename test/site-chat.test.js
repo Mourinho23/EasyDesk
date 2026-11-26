@@ -28,3 +28,71 @@ test("website chat streams online AI responses without downloading a model", () 
   assert.match(tailwind, /\.tw-fixed\{position:fixed\}/);
   assert.doesNotThrow(() => new vm.Script(script, { filename: "site/chat.js" }));
 });
+
+test("website chat keeps complete turns when sending the recent conversation", async () => {
+  const script = fs.readFileSync(path.join(site, "chat.js"), "utf8");
+  const elements = new Map();
+  const requests = [];
+
+  class MockElement {
+    constructor() {
+      this.listeners = {};
+      this.dataset = {};
+      this.style = {};
+      this.classList = { add() {}, remove() {} };
+      this.children = [];
+      this.hidden = true;
+      this.disabled = false;
+      this.value = "";
+      this.scrollHeight = 0;
+    }
+    addEventListener(type, listener) { this.listeners[type] = listener; }
+    append(element) { this.children.push(element); }
+    replaceChildren() { this.children = []; }
+    remove() {}
+    setAttribute() {}
+    focus() {}
+  }
+
+  const document = {
+    activeElement: null,
+    body: { classList: { add() {}, remove() {} } },
+    getElementById(id) {
+      if (!elements.has(id)) elements.set(id, new MockElement());
+      return elements.get(id);
+    },
+    createElement() { return new MockElement(); }
+  };
+  const encoder = new TextEncoder();
+
+  vm.runInNewContext(script, {
+    document,
+    window: { EASYDESK_AI_ENDPOINT: "https://example.test/chat" },
+    HTMLElement: MockElement,
+    TextDecoder,
+    fetch: async (_url, options) => {
+      requests.push(JSON.parse(options.body));
+      const body = new ReadableStream({
+        start(controller) {
+          controller.enqueue(encoder.encode('data: {"candidates":[{"content":{"parts":[{"text":"ok"}]}}]}\n\n'));
+          controller.close();
+        }
+      });
+      return { ok: true, body };
+    }
+  });
+
+  const form = elements.get("chat-form");
+  const input = elements.get("chat-input");
+  for (let turn = 0; turn < 7; turn++) {
+    input.value = "pergunta " + turn;
+    await form.listeners.submit({ preventDefault() {} });
+  }
+
+  const messages = requests[6].messages;
+  assert.equal(messages.length, 11);
+  assert.deepEqual(messages.map(message => message.role), [
+    "user", "assistant", "user", "assistant", "user", "assistant",
+    "user", "assistant", "user", "assistant", "user"
+  ]);
+});
