@@ -19,8 +19,7 @@ test("website chat streams online AI responses without downloading a model", () 
   assert.doesNotMatch(script, /Gemini · pronta/);
   assert.match(html, /src="\.\/easydesk-icon\.png"/);
   assert.match(html, /href="\.\/tailwind\.css"/);
-  assert.match(html, /não é necessário descarregar um modelo/);
-  assert.match(html, /mensagens são enviadas à Google Gemini API/);
+  assert.doesNotMatch(html, /id="chat-hint"|As respostas são geradas online/);
   assert.match(script, /window\.EASYDESK_AI_ENDPOINT/);
   assert.match(script, /response\.body\.getReader\(\)/);
   assert.match(script, /part\.thought/);
