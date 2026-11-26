@@ -194,12 +194,12 @@
     <section id="chat-dialog" class="chat-dialog" role="dialog" aria-modal="true" aria-labelledby="chat-title" aria-hidden="true">
       <div class="chat-window tw-flex tw-flex-col">
         <header class="chat-header tw-flex tw-items-center tw-justify-between">
-          <div class="chat-heading tw-flex tw-items-center">
+          <div class="chat-heading-icon">
             <img src="./easydesk-icon.png" alt="" aria-hidden="true">
-            <div>
-              <h2 id="chat-title">EasyDesk AI</h2>
-              <p><span class="chat-status-dot"></span><span id="chat-mode-status">IA online · Gemini</span></p>
-            </div>
+          </div>
+          <div class="chat-heading">
+            <h2 id="chat-title">EasyDesk AI</h2>
+            <span id="chat-mode-status" class="chat-status-dot" role="status" aria-live="polite" aria-label="IA operacional" data-status="ready"></span>
           </div>
           <div class="chat-window-actions tw-flex tw-items-center">
             <button id="chat-minimize" class="chat-icon-button" type="button" aria-label="Minimizar chat" title="Minimizar">
