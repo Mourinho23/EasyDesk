@@ -16,6 +16,11 @@
   let history = [];
   let returnFocus;
 
+  function setStatus(status, label) {
+    modeStatus.dataset.status = status;
+    modeStatus.setAttribute("aria-label", label);
+  }
+
   function addMessage(role, text, extraClass = "") {
     const message = document.createElement("p");
     message.className = `chat-message ${role === "user" ? "user" : "assistant"} ${extraClass}`.trim();
@@ -23,10 +28,6 @@
     messagesElement.append(message);
     messagesElement.scrollTop = messagesElement.scrollHeight;
     return message;
-  }
-
-  function setStatus(text) {
-    modeStatus.textContent = text;
   }
 
   function resetConversation() {
@@ -178,7 +179,7 @@
         throw new Error("O serviço online ainda não está configurado.");
       }
 
-      setStatus("Gemini · a pensar e a responder");
+      setStatus("busy", "IA a pensar e a responder");
       const response = await fetch(apiEndpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -219,10 +220,10 @@
         { role: "assistant", content: answer }
       );
       history = history.slice(-12);
-      setStatus("Gemini · pronta");
+      setStatus("ready", "IA operacional");
     } catch (error) {
       pending.remove();
-      setStatus("Gemini · indisponível");
+      setStatus("unavailable", "IA indisponível");
       errorElement.textContent = error?.message || "Não foi possível obter uma resposta. Tenta novamente.";
       errorElement.hidden = false;
     } finally {
@@ -232,6 +233,6 @@
     }
   });
 
-  setStatus(apiEndpoint ? "Gemini · pronta" : "Gemini · por configurar");
+  setStatus(apiEndpoint ? "ready" : "unconfigured", apiEndpoint ? "IA operacional" : "IA por configurar");
   resetConversation();
 })();
