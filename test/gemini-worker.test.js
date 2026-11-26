@@ -20,6 +20,10 @@ function createEnvironment(overrides = {}) {
 }
 
 function createChatRequest(messages, headers = {}) {
+  return createRawChatRequest(JSON.stringify({ messages }), headers);
+}
+
+function createRawChatRequest(body, headers = {}) {
   return new Request("https://easydesk-ai.example.workers.dev/chat", {
     method: "POST",
     headers: {
@@ -28,7 +32,7 @@ function createChatRequest(messages, headers = {}) {
       "Content-Type": "application/json",
       ...headers
     },
-    body: JSON.stringify({ messages })
+    body
   });
 }
 
@@ -54,6 +58,17 @@ test("Worker rejects requests from other origins", async () => {
   );
 
   assert.equal(response.status, 403);
+});
+
+test("Worker rejects valid JSON without a conversation object", async () => {
+  for (const body of ["null", "42", "[]"]) {
+    const response = await worker.fetch(
+      createRawChatRequest(body),
+      createEnvironment()
+    );
+
+    assert.equal(response.status, 400);
+  }
 });
 
 test("Worker validates conversation size and rate limits before calling Gemini", async t => {
