@@ -14,6 +14,9 @@ test("website chat streams online AI responses without downloading a model", () 
 
   assert.match(html, /id="chat-launcher"/);
   assert.match(html, /id="chat-title">EasyDesk AI/);
+  assert.match(html, /id="chat-title">EasyDesk AI<\/h2>\s*<span id="chat-mode-status" class="chat-status-dot"/);
+  assert.doesNotMatch(html, /IA online · Gemini/);
+  assert.doesNotMatch(script, /Gemini · pronta/);
   assert.match(html, /src="\.\/easydesk-icon\.png"/);
   assert.match(html, /href="\.\/tailwind\.css"/);
   assert.match(html, /não é necessário descarregar um modelo/);
